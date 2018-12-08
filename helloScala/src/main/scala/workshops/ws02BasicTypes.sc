@@ -25,17 +25,22 @@ val aBoolean: Boolean = 2 > 4
 val aChar: Char = 'a'
 s"Char heeft een range van ${Char.MinValue.toInt}..${Char.MaxValue.toInt}"
 
-
 val aString: String = "hi"
+
+// Unit is het nieuwe void
+def printHello : Unit = println("Hello")
 
 // Literal Long hexadecimal
 val answer = 0X2AL
+
+
 
 //Operators zijn eigenlijk methods
 // En methodes (met 1 argument) zijn operators
 val drie = 1.+(2)
 val x = "mooiweer" compare "lelijk weer"
 val lower = "HEY DAAR" toLowerCase
+val minx = x.unary_- // of -x
 
 
 
