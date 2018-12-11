@@ -12,6 +12,7 @@ object WS05Zoo {
     * Maar vaak zijn ze kant en klaar te gebruiken.
     */
   trait Kwaker {
+    val aantal: Int
     def kwaak() = {println("  Kwaak, kwaak")}
   }
 
@@ -26,8 +27,11 @@ object WS05Zoo {
 
 
   sealed class Animal(val naam: String)
-  case class Kikker(override val naam: String) extends Animal(naam) with Kwaker
+  case class Kikker(override val naam: String) extends Animal(naam) with Kwaker {
+    override val aantal: Int = 24
+  }
   case class Eend(override val naam: String) extends Animal(naam) with Kwaker  with Eter {
+    override val aantal: Int = 33
     type GeschiktVoedsel = Brood
   }
   case class Hond(override val naam: String) extends Animal(naam)  with Eter {

@@ -73,4 +73,9 @@ class Ws03ClassesSpec extends FlatSpec with Matchers {
     1 + Breuk(1,3) shouldEqual(Breuk(4, 3))
   }
 
+  "apply string" should "return string" in {
+    val breukje = Breuk(17, 42)
+    val string = breukje.apply("antwoord:")
+    string shouldEqual "antwoord: 17/42"
+  }
 }

@@ -14,12 +14,14 @@ val greeting = s"Hallo ${wereld}"
 
 // with def functions are defined
 // the last expression is the return value.
-def increment(i: Int): Int = {i + 1}
+def increment(i: Int) = {i.+(1)}
 // variables are mutable
 var teller = 0;
-teller = increment(teller)
+teller = increment(3)
 
 val eenLijst= List("Java", "Scala", "Kotlin", "Groovy", "Clojure")
+
+val scala = eenLijst.apply(1)
 
 teller = 0
 while (teller < eenLijst.length) {
@@ -27,7 +29,7 @@ while (teller < eenLijst.length) {
   teller = increment(teller)
 }
 // shorter
-eenLijst.foreach{str => println(s"  $str")}
+eenLijst.foreach({str => println(s"  $str")})
 
 val lengtes = eenLijst.map({str => str.length()})
 
@@ -35,6 +37,8 @@ val lengtes = eenLijst.map({str => str.length()})
 // isLang is van het type functie van string naar String
 // We gebruiken hier dus een functie literal
 val isLang: String => String = {x =>if (x.length > 5) "lang" else "kort"}
+
+val lijstLang = eenLijst.map(isLang)
 // for is ook een expressie
 val lengtes2 = for {
     x <- eenLijst
@@ -44,7 +48,7 @@ val lengtes2 = for {
 
 
   // Functies zijn firstclass, ze kunnen ook als argument of returwaarde worden gebruikt
-val isOokLang = identity(isLang)
+val isOokLang: String => String = identity(isLang)
 
 println(workshops.aString)
 

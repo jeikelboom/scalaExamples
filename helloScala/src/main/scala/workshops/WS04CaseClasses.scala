@@ -1,5 +1,7 @@
 package workshops
 
+import workshops.WS04ClassesObjectsTraits.{Kleur, Waarde}
+
 
 object WS04ClassesObjectsTraits {
 
@@ -15,19 +17,19 @@ object WS04ClassesObjectsTraits {
   }
 
   object Waarde extends Enumeration {
-    val K2 = Value(2)
-    val K3 = Value(3)
-    val K4 = Value(4)
-    val K5 = Value(5)
-    val K6 = Value(6)
-    val K7 = Value(7)
-    val K8 = Value(8)
-    val K9 = Value(9)
-    val K10 = Value(10)
-    val Boer = Value(10)
-    val Vrouw = Value(10)
-    val Heer = Value(10)
-    val Aas = Value(11)
+    val K2 = Value
+    val K3 = Value
+    val K4 = Value
+    val K5 = Value
+    val K6 = Value
+    val K7 = Value
+    val K8 = Value
+    val K9 = Value
+    val K10 = Value
+    val Boer = Value
+    val Vrouw = Value
+    val Heer = Value
+    val Aas = Value
   }
 
   // case classes eenvoudige datastructuren
@@ -37,6 +39,19 @@ object WS04ClassesObjectsTraits {
   import WS04ClassesObjectsTraits.Waarde._
 
   val ruitenHeer = Speelkaart(Ruiten, Heer)
+  val nogEen = ruitenHeer.copy(kleur = Schoppen)
+  val kl: Int= Kleur.Schoppen.id
 
 
+}
+object runner22 extends App {
+  val xxxx: Kleur.Value = Kleur.apply(2)
+  println (xxxx)
+  val eenKaart = (Kleur.Schoppen, Waarde.Aas)
+  val mytuple: (Int, String) = (1, "hallo")
+  val (x,y) = mytuple
+  println(x)
+  println(y)
+  println(mytuple._1)
+  val een: String = mytuple._2
 }

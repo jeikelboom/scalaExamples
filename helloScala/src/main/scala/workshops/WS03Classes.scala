@@ -3,7 +3,7 @@ package workshops
 // Een object is ook first class
 object WS03Classes {
 
-  class Breuk(t: Int, n: Int) {
+  class Breuk(val t: Int, val n: Int) {
     require(n != 0, "Noemer kan niet nul zijn")
     val g = Breuk.ggd(t.abs, n.abs)
     val teller = n.signum * (t / g)
@@ -24,6 +24,7 @@ object WS03Classes {
         case _ => false
       }
     }
+    def apply(str: String) = s"$str ${teller}/${noemer}"
 
     override def toString: String = s" ${teller}/${noemer} "
   }
@@ -39,10 +40,11 @@ object WS03Classes {
     // deze is implicit en wordt "vanzelf" aangeroepen bij een assignment
     implicit def apply(t: Int): Breuk = new Breuk(t, 1)
 
-    private def ggd(a: Int, b: Int): Int = {
+    def ggd(a: Int, b: Int): Int = {
       if (b == 0) a else ggd(b, a % b)
     }
 
   }
+
 
 }
