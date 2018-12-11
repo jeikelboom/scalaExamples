@@ -1,0 +1,21 @@
+@(artikel: Form[CreateArtikelForm])(implicit request: MessagesRequestHeader)
+
+@import helper._
+
+@request.flash.get("success").map { key =>
+   @request.messages(key)
+}
+
+@main("Welcome to Play") {
+  @form(routes.ArtikelenController.addArtikel()) {
+		@inputText(artikel("ean"))
+        @inputText(artikel("omschrijving"))
+        @select(artikel("ag"), List(("Vleeswaren", "Vleeswaren"),("Zeep", "Zeep"), ("Frisdrank", "Frisdrank")))
+        @inputText(artikel("prijs"))
+		@CSRF.formField
+
+		<div class="buttons">
+			<input type="submit" value="Add Artikel"/>
+		</div>
+	}
+}

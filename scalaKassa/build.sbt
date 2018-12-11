@@ -1,3 +1,5 @@
+import Dependencies._
+
 name := """play-scala-slick-example"""
 
 version := "2.6.x"
@@ -13,5 +15,6 @@ libraryDependencies += "com.typesafe.play" %% "play-slick" % "3.0.3"
 libraryDependencies += "com.typesafe.play" %% "play-slick-evolutions" % "3.0.3"
 
 libraryDependencies += "com.h2database" % "h2" % "1.4.197"
+libraryDependencies += scalaTest % Test
 
 libraryDependencies += specs2 % Test
