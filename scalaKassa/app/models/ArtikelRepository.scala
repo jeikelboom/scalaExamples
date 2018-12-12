@@ -1,14 +1,17 @@
 package models
 
 import javax.inject.{Inject, Singleton}
-import models.domein.Artikel
+import models.domein.{Artikel, ArtikelenRepo, ErrorMessage}
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent._
+import scala.concurrent.duration._
+import scala.util.{Failure, Success, Try}
 
 @Singleton
-class ArtikelRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) {
+class ArtikelRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) extends ArtikelenRepo {
   val TABLENAME= "artikelen"
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
 
@@ -54,8 +57,15 @@ class ArtikelRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(imp
     artikelen.result
   }
 
-  def findByEan(ean: String) : Future[Seq[Artikel]] = db.run {
-    artikelen.filter(_.ean === ean).result
+  override def findByEan(ean: String): Either[ErrorMessage, Artikel] = {
+    val result: Future[Seq[Artikel]] = db.run {
+      artikelen.filter(_.ean === ean).result
+    }
+    val waited: Try[Seq[Artikel]] = Await.ready(result, 100 seconds).value.get
+    waited match {
+      case Success(Seq(artikel)) => Right(artikel)
+      case Failure(exception) => Left(ErrorMessage("error.notfound"))
+    }
   }
 
 

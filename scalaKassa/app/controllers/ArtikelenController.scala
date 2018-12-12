@@ -63,19 +63,14 @@ class ArtikelenController  @Inject()(repo: ArtikelRepository,
     }
   }
 
-  def getArtikelbyEAN( ean: String) = Action.async { implicit request =>
-    val iets: Future[Seq[Artikel]] = repo.findByEan(ean)
-    repo.findByEan(ean).map(f => f match {
-      case Seq(x) => Ok(views.html.artikelen.artikel(artikelForm.fill(CreateArtikelForm(x))))
+  def getArtikelbyEAN( ean: String) = Action { implicit request =>
+//    val iets: Future[Seq[Artikel]] = repo.findByEan(ean)
+    repo.findByEan(ean) match  {
+      case (Right(art)) => Ok(views.html.artikelen.artikel(artikelForm.fill(CreateArtikelForm(art))))
       case _ => Ok(views.html.artikelen.artikel(artikelForm))
-    })
+    }
   }
 
-//  def getArtikelbyEAN( ean: String) = Action { implicit request =>
-//    val artf = CreateArtikelForm(ean, "dummy", "Vleeswaren", 2222)
-//    repo.findByEan().map {artikel =>
-//      Ok(views.html.artikelen.artikel(artikelForm.fill(artf)))
-//  }
 
 }
 case class CreateArtikelForm(ean: String, omschrijving: String, ag: String, prijs: Int)

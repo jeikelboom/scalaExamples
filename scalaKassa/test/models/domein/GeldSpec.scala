@@ -1,4 +1,4 @@
-package models
+package models.domein
 
 import org.scalatest.{FlatSpec, Matchers}
 
