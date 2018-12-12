@@ -13,7 +13,7 @@ prijs:    @request.flash.get("prijs")
     totaal: @request.flash.get("totaal")
 </p>
 
-@main("Welcome to Play") {
+@main("Kassa") {
   @form(routes.KassaController.scanArtikel()) {
 		@inputText(scan("ean"))
  		@CSRF.formField
