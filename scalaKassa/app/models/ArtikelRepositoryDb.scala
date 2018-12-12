@@ -44,7 +44,12 @@ class ArtikelRepositoryDb @Inject()(dbConfigProvider: DatabaseConfigProvider)(im
       * In this case, we are simply passing the id, name and page parameters to the Person case classes
       * apply and unapply methods.
       */
-    def * = (id, ean, omschrijving, artgroep, prijs) <> ((Artikel.apply3 _).tupled, Artikel.unapply)
+    // Om syntactische redenen: de  Artikel.apply is ambiguous
+    def apply3( id: Long, ean: String, omschrijving: String,  ag: String,  pr: Int ): Artikel = {
+      Artikel(id, ean, omschrijving, ag, pr)
+    }
+
+    def * = (id, ean, omschrijving, artgroep, prijs) <> ((apply3 _).tupled, Artikel.unapply)
   }
 
   private val artikelen = TableQuery[ArtikelTable]

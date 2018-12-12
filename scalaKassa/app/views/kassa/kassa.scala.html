@@ -23,8 +23,6 @@ prijs:    @request.flash.get("prijs")
 		</div>
 	}
 
-    <br/>
-    <a href="@routes.KassaController.bon">Bon</a>
     <h1>Gekochte artikelen</h1>
     <table>
         <tbody>
@@ -40,8 +38,7 @@ prijs:    @request.flash.get("prijs")
     <h3>Totaal @totaal</h3>
 
     <br/>
-    <a href="@routes.KassaController.kassa()">kassa</a>
-
+    <h1><a href="@routes.KassaController.bon">Bon, volgende klant</a></h1>
     <br/>
     <a href="@routes.ArtikelenController.reset">reset</a>
     <br/>

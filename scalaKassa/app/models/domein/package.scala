@@ -23,9 +23,6 @@ package object domein {
       Artikel(id, ean, omschrijving, ag.toString, pr.bedragInCenten)
     }
 
-    def apply3( id: Long, ean: String, omschrijving: String,  ag: String,  pr: Int ): Artikel = {
-      Artikel(id, ean, omschrijving, ag, pr)
-    }
 
   }
 
