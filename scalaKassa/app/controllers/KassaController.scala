@@ -1,28 +1,17 @@
 package controllers
 
-import javax.inject._
-
-import models._
-import play.api.data.Form
-import play.api.data.Forms._
-import play.api.data.validation.Constraints._
-import play.api.libs.json.Json
-import play.api.mvc._
-
-import scala.concurrent.{ExecutionContext, Future}
-
-
 
 import javax.inject.Inject
 import models.{ArtikelRepositoryDb, ScansRepositoryInMem}
 import models.domein._
+import models.domein.Constants._
 import play.api.data.Form
 import play.api.data.Forms._
-import play.api.data.validation.Constraints._
-import play.api.libs.json.Json
 import play.api.mvc._
 
 import scala.concurrent._
+
+
 
 class KassaController   @Inject()(repo: ArtikelRepositoryDb,
                                   cc: MessagesControllerComponents)
@@ -30,7 +19,7 @@ class KassaController   @Inject()(repo: ArtikelRepositoryDb,
   extends MessagesAbstractController(cc) {
 
   trait ArtikelRepoReference {
-    val artRepo: ArtikelenRepository = repo
+    val artRepo: ArtikelRepository = repo
   }
 
   object kassa1 extends Kassa with ScansRepositoryInMem with ArtikelRepoReference
@@ -45,7 +34,7 @@ class KassaController   @Inject()(repo: ArtikelRepositoryDb,
   def scanArtikel = Action { implicit request =>
     scanForm.bindFromRequest.fold(
       errorForm => {
-        Ok(views.html.kassa.kassa(errorForm))
+        Ok(views.html.kassa.kassa(errorForm,List.empty, Bedrag(0)))
       },
       scanData => {
         kassa1.scan(scanData.ean) match {
@@ -54,14 +43,21 @@ class KassaController   @Inject()(repo: ArtikelRepositoryDb,
             "omschrijving" -> scan.artikel.omschrijving,
             "prijs" -> scan.artikel.prijs.toString,
             "totaal" -> kassa1.totaalBedrag().toString)
-          case _ => Redirect(routes.KassaController.kassa).flashing("success" -> "error.notfound")
+          case Left(message) => Redirect(routes.KassaController.kassa).flashing("success" -> message.errorCode)
         }
       }
     )
   }
 
-  def kassa( )= Action { implicit request =>
-    Ok(views.html.kassa.kassa(scanForm))
+  def kassa() = Action { implicit request =>
+    Ok(views.html.kassa.kassa(scanForm, kassa1.regels(), kassa1.totaalBedrag()))
+  }
+
+  def bon() = Action{ implicit request =>
+    val regels =kassa1.regels()
+    val bedrag =kassa1.totaalBedrag()
+    kassa1.nieuweKlant()
+    Ok(views.html.kassa.bon(regels, bedrag))
   }
 
 }

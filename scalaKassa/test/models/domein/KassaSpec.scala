@@ -1,25 +1,23 @@
 package models.domein
 
-
+import models.domein.Constants._
 
 import org.scalatest.{FlatSpec, Matchers}
 
 class KassaSpec extends FlatSpec with Matchers {
-  val HAM = Artikel.artikel(1, "12", "Ham", ArtikelGroep.Vleeswaren, Bedrag(1, 95))
-  val COLA = Artikel.artikel(1, "13", "Cola", ArtikelGroep.Frisdrank, Bedrag(2, 55))
 
   /**
     * Simuleer een database met map
     */
   trait RepoMock {
-    val artRepo = new ArtikelenRepository {
+    val artRepo = new ArtikelRepository {
       val artmap :Map[String, Artikel] = Map(
         HAM.ean -> HAM,
         COLA.ean -> COLA
       )
       override def findByEan(ean: String): Either[FoutMelding, Artikel] = {
         artmap.get(ean) match {
-          case None => Left(FoutMelding("error.notfound"))
+          case None => Left(ARTIKEL_NIET_GEVONDEN)
           case Some(art) => Right(art)
         }
       }
@@ -28,7 +26,7 @@ class KassaSpec extends FlatSpec with Matchers {
   }
 
   trait ScansMock extends ScansRepo {
-    val artRepo: ArtikelenRepository
+    val artRepo: ArtikelRepository
     val scansRepo: ScansRepo = this
     var volgnummer: Int = 0
     var bonRegels : Map[String,Scan] = Map.empty
@@ -68,7 +66,7 @@ class KassaSpec extends FlatSpec with Matchers {
   "Scan ??? (niet bestaand ean)" should "return error" in {
     object kassa extends Kassa with ScansMock with RepoMock
     val rv= kassa.scan("???")
-    rv.shouldEqual(Left(FoutMelding("error.notfound")))
+    rv.shouldEqual(Left(ARTIKEL_NIET_GEVONDEN))
   }
   "Scan 12" should "totaal 1,95" in {
     object kassa extends Kassa with ScansMock with RepoMock

@@ -1,4 +1,4 @@
-@(scan: Form[ScanFormData])(implicit request: MessagesRequestHeader)
+@(scan: Form[ScanFormData], scans: List[domein.Scan], totaal: domein.Bedrag)(implicit request: MessagesRequestHeader)
 
 @import helper._
 
@@ -22,4 +22,29 @@ prijs:    @request.flash.get("prijs")
 			<input type="submit" value="Scan"/>
 		</div>
 	}
+
+    <br/>
+    <a href="@routes.KassaController.bon">Bon</a>
+    <h1>Gekochte artikelen</h1>
+    <table>
+        <tbody>
+            @for(scan <- scans) {
+                <tr><td>@scan.artikel.ean</td><td>@scan.artikel.omschrijving</td><td>@scan.artikel.ag</td><td>@scan.aantal x</td><td>@scan.artikel.prijs =</td><td>@scan.verkoopPrijs</td></tr>
+            }
+            <tr><td></td><td>totaal</td><td></td><td></td><td></td><td> @totaal</td></tr>
+
+        </tbody>
+
+    </table>
+
+    <h3>Totaal @totaal</h3>
+
+    <br/>
+    <a href="@routes.KassaController.kassa()">kassa</a>
+
+    <br/>
+    <a href="@routes.ArtikelenController.reset">reset</a>
+    <br/>
+    <a href="@routes.ArtikelenController.addArtikel">add</a>
+
 }

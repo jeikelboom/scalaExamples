@@ -1,7 +1,8 @@
 package models
 
 import javax.inject.{Inject, Singleton}
-import models.domein.{Artikel, ArtikelenRepository, FoutMelding}
+import models.domein.Constants._
+import models.domein.{Artikel, ArtikelRepository, FoutMelding}
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 
@@ -11,14 +12,15 @@ import scala.concurrent.duration._
 import scala.util.{Failure, Success, Try}
 
 @Singleton
-class ArtikelRepositoryDb @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) extends ArtikelenRepository {
-  val TABLENAME= "artikelen"
+class ArtikelRepositoryDb @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) extends ArtikelRepository {
+  private val ARTIKELEN_TABEL= "artikelen"
+
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._
   import profile.api._
 
-  private  class ArtikelTable(tag: Tag) extends Table[Artikel](tag, "artikelen") {
+  private  class ArtikelTable(tag: Tag) extends Table[Artikel](tag, ARTIKELEN_TABEL) {
 
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
 
@@ -64,9 +66,12 @@ class ArtikelRepositoryDb @Inject()(dbConfigProvider: DatabaseConfigProvider)(im
     val waited: Try[Seq[Artikel]] = Await.ready(result, 100 seconds).value.get
     waited match {
       case Success(Seq(artikel)) => Right(artikel)
-      case _ => Left(FoutMelding("error.notfound"))
+      case _ => Left(ARTIKEL_NIET_GEVONDEN)
     }
   }
 
+  def reset() = db.run{
+    artikelen.delete
+  }
 
 }

@@ -49,15 +49,18 @@ package object domein {
   case class FoutMelding(val errorCode: String)
 
   // Een gescanned artikel. We houden bij hoe vaak het gescanned is.
-  case class Scan(val artikel: Artikel,val aantal: Int)
+  case class Scan(val artikel: Artikel,val aantal: Int) {
+    def verkoopPrijs() = artikel.prijs * aantal
+  }
 
-  abstract trait ArtikelenRepository {
+  abstract trait ArtikelRepository {
     def findByEan(ean: String): Either[FoutMelding, Artikel]
   }
 
   abstract trait ScansRepo {
     def storeScan (ean: String) :Either[FoutMelding, Scan]
     def regels() : List[Scan]
+    def reset() : Unit
   }
 
   trait Kassa {
@@ -67,7 +70,10 @@ package object domein {
       scansRepo.storeScan(ean)
     }
     def totaalBedrag(): Bedrag = {
-      scansRepo.regels().foldLeft(Bedrag(0))({ (geld, scan) => geld + scan.artikel.prijs * scan.aantal})
+      scansRepo.regels().foldLeft(Bedrag(0))({ (geld, scan) => geld + scan.verkoopPrijs()})
+    }
+    def nieuweKlant() :Unit = {
+      scansRepo.reset()
     }
   }
 

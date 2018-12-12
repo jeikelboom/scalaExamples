@@ -2,13 +2,16 @@ package controllers
 
 import javax.inject._
 import models._
+import models.domein._
+import models.domein.Constants._
 import models.domein.Artikel
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.libs.json.Json
 import play.api.mvc._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent._
+import scala.concurrent.duration._
 
 
 class ArtikelenController  @Inject()(repo: ArtikelRepositoryDb,
@@ -52,12 +55,24 @@ class ArtikelenController  @Inject()(repo: ArtikelRepositoryDb,
     )
   }
 
+  def reset = Action {request =>
+    Await.ready(repo.reset(), 100 seconds)
+    ARTIKELEN_LIJST.foreach(artikel => repo.create(artikel.ean, artikel.omschrijving, artikel.ag, artikel.pr))
+    Redirect(routes.ArtikelenController.artikelenOverzicht).flashing("success" -> "artikel.created")
+  }
   /**
     * A REST endpoint that gets all the people as JSON.
     */
   def getArtikelen = Action.async { implicit request =>
     repo.list().map { artikel =>
       Ok(Json.toJson(artikel))
+    }
+  }
+
+  def artikelenOverzicht = Action.async { implicit request =>
+
+    repo.list().map { lijst  =>
+      Ok(views.html.artikelen.artikelen(lijst.to[List]))
     }
   }
 

@@ -1,0 +1,25 @@
+@( artikelen: List[domein.Artikel])(implicit request: MessagesRequestHeader)
+
+@import helper._
+
+
+@main("Artikelen") {
+    <h1>Bekende artikelen</h1>
+  <table>
+      <tbody>
+        @for(artikel <- artikelen) {
+            <tr><td>@artikel.ean</td><td>@artikel.omschrijving</td><td>@artikel.prijs</td><td>@artikel.ag</td></tr>
+        }
+
+      </tbody>
+
+  </table>
+
+    <br/>
+    <a href="@routes.ArtikelenController.reset">reset</a>
+    <br/>
+    <a href="@routes.ArtikelenController.addArtikel">add</a>
+    <br/>
+    <a href="@routes.KassaController.kassa()">kassa</a>
+
+}

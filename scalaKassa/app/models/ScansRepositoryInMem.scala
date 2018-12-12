@@ -3,7 +3,7 @@ package models
 import models.domein._
 
 trait ScansRepositoryInMem extends ScansRepo {
-  val artRepo: ArtikelenRepository
+  val artRepo: ArtikelRepository
   val scansRepo: ScansRepo = this
   var volgnummer: Int = 0
   var bonRegels: Map[String, Scan] = Map.empty
@@ -31,4 +31,8 @@ trait ScansRepositoryInMem extends ScansRepo {
 
   override def regels(): List[Scan] = bonRegels.to[List].map({_._2})
 
+  override def reset(): Unit = {
+    volgnummer = 0;
+    bonRegels = Map.empty
+  }
 }
