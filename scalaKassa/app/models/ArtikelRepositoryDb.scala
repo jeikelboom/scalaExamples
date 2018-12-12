@@ -1,6 +1,7 @@
 package models
 
 import javax.inject.{Inject, Singleton}
+import models.domein.Artikel._
 import models.domein.Constants._
 import models.domein.{Artikel, ArtikelRepository, FoutMelding}
 import play.api.db.slick.DatabaseConfigProvider
@@ -43,7 +44,7 @@ class ArtikelRepositoryDb @Inject()(dbConfigProvider: DatabaseConfigProvider)(im
       * In this case, we are simply passing the id, name and page parameters to the Person case classes
       * apply and unapply methods.
       */
-    def * = (id, ean, omschrijving, artgroep, prijs) <> ((Artikel.apply _).tupled, Artikel.unapply)
+    def * = (id, ean, omschrijving, artgroep, prijs) <> ((Artikel.apply3 _).tupled, Artikel.unapply)
   }
 
   private val artikelen = TableQuery[ArtikelTable]

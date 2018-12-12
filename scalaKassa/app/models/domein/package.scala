@@ -19,8 +19,12 @@ package object domein {
   object Artikel {
     implicit val artikelFormat = Json.format[Artikel]
 
-    def artikel(id: Long, ean: String, omschrijving: String, ag: ArtikelGroep.Value, pr: Bedrag) = {
+    def apply(id: Long, ean: String, omschrijving: String, ag: ArtikelGroep.Value, pr: Bedrag): Artikel = {
       Artikel(id, ean, omschrijving, ag.toString, pr.bedragInCenten)
+    }
+
+    def apply3( id: Long, ean: String, omschrijving: String,  ag: String,  pr: Int ): Artikel = {
+      Artikel(id, ean, omschrijving, ag, pr)
     }
 
   }
