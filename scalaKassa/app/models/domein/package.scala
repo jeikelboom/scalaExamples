@@ -1,6 +1,6 @@
 package models
 
-import models.domein.{Artikel, ArtikelGroep, ErrorMessage}
+import models.domein.{Artikel, ArtikelGroep, FoutMelding}
 import play.api.libs.json.Json
 
 package object domein {
@@ -13,26 +13,26 @@ package object domein {
 
   case class Artikel(val id: Long, val ean: String, val omschrijving: String, val ag: String, val pr: Int ) {
     val artikelGroep : ArtikelGroep.Value = ArtikelGroep.withName(ag)
-    val prijs = Geld(pr)
+    val prijs = Bedrag(pr)
   }
 
   object Artikel {
     implicit val artikelFormat = Json.format[Artikel]
 
-    def artikel(id: Long, ean: String, omschrijving: String, ag: ArtikelGroep.Value, pr: Geld) = {
+    def artikel(id: Long, ean: String, omschrijving: String, ag: ArtikelGroep.Value, pr: Bedrag) = {
       Artikel(id, ean, omschrijving, ag.toString, pr.bedragInCenten)
     }
 
   }
 
-  case class Geld(val bedragInCenten: Int) {
+  case class Bedrag(val bedragInCenten: Int) {
     val centen = bedragInCenten % 100
     val euros = bedragInCenten /100
 
-    def +(bedrag: Geld) = Geld(bedragInCenten + bedrag.bedragInCenten)
-    def -(bedrag: Geld) = Geld(bedragInCenten = bedrag.bedragInCenten)
-    def /(door: Int) = Geld(bedragInCenten / door)
-    def *(maal: Int) = Geld(bedragInCenten * maal)
+    def +(bedrag: Bedrag) = Bedrag(bedragInCenten + bedrag.bedragInCenten)
+    def -(bedrag: Bedrag) = Bedrag(bedragInCenten = bedrag.bedragInCenten)
+    def /(door: Int) = Bedrag(bedragInCenten / door)
+    def *(maal: Int) = Bedrag(bedragInCenten * maal)
     def roundedDown() = bedragInCenten - bedragInCenten % 5
 
     override def toString: String ={
@@ -42,32 +42,32 @@ package object domein {
       s" € ${euros6w},${centen2w}${sign}"
     }
   }
-  object Geld {
-    def apply(euros: Int, centen: Int): Geld = new Geld(100 * euros + centen)
+  object Bedrag {
+    def apply(euros: Int, centen: Int): Bedrag = new Bedrag(100 * euros + centen)
   }
 
-  case class ErrorMessage (val errorCode: String)
+  case class FoutMelding(val errorCode: String)
 
   // Een gescanned artikel. We houden bij hoe vaak het gescanned is.
-  case class Scan( val ean: String, val aantal: Int, val artikel: Artikel)
+  case class Scan(val artikel: Artikel,val aantal: Int)
 
-  abstract trait ArtikelenRepo {
-    def findByEan(ean: String): Either[ErrorMessage, Artikel]
+  abstract trait ArtikelenRepository {
+    def findByEan(ean: String): Either[FoutMelding, Artikel]
   }
 
   abstract trait ScansRepo {
-    def storeScan (ean: String) :Either[ErrorMessage, Scan]
+    def storeScan (ean: String) :Either[FoutMelding, Scan]
     def regels() : List[Scan]
   }
 
   trait Kassa {
     val scansRepo : ScansRepo
 
-    def scan(ean: String): Either[ErrorMessage, Scan] = {
+    def scan(ean: String): Either[FoutMelding, Scan] = {
       scansRepo.storeScan(ean)
     }
-    def totaalBedrag(): Geld = {
-      scansRepo.regels().foldLeft(Geld(0))({(geld, scan) => geld + scan.artikel.prijs * scan.aantal})
+    def totaalBedrag(): Bedrag = {
+      scansRepo.regels().foldLeft(Bedrag(0))({ (geld, scan) => geld + scan.artikel.prijs * scan.aantal})
     }
   }
 
