@@ -1,13 +1,13 @@
 package models.domein
 
+import models.ScansRepositoryInMem
 import models.domein.Constants._
-
 import org.scalatest.{FlatSpec, Matchers}
 
 class KassaSpec extends FlatSpec with Matchers {
 
   /**
-    * Simuleer een database met map
+    * Simuleer een database met behulp van een map
     */
   trait RepoMock {
     val artRepo = new ArtikelRepository {
@@ -25,35 +25,8 @@ class KassaSpec extends FlatSpec with Matchers {
     }
   }
 
-  trait ScansMock extends ScansRepo {
+  trait ScansMock extends ScansRepositoryInMem {
     val artRepo: ArtikelRepository
-    val scansRepo: ScansRepo = this
-    var volgnummer: Int = 0
-    var bonRegels : Map[String,Scan] = Map.empty
-
-    override def storeScan (ean: String) :Either[FoutMelding, Scan] = {
-      bonRegels.get(ean) match {
-        case Some(Scan(art, aantal)) => {
-            bonRegels += ean -> Scan(art, aantal + 1)
-            Right(bonRegels(ean))
-          }
-        case None => {
-          //val result: Either[ErrorMessage, Artikel] =
-          artRepo.findByEan(ean) match {
-            case Left(msg) => Left(msg)
-            case Right(artikel) => {
-              val scan =Scan(artikel, 1)
-              bonRegels += ean -> scan
-              Right(scan)
-            }
-          }
-
-        }
-      }
-    }
-
-
-    override def regels(): List[Scan] = bonRegels.to[List].map({_._2})
   }
 
 

@@ -15,7 +15,7 @@ class IntegrationSpec extends Specification {
     }
 
     "render the index page" in new WithApplication {
-      val home = route(app, FakeRequest(GET, "/")).get
+      val home = route(app, FakeRequest(GET, "/artikel")).get
 
       status(home) must equalTo(OK)
       contentType(home) must beSome.which(_ == "text/html")
