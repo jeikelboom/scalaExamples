@@ -64,7 +64,7 @@ class ArtikelRepositoryDb @Inject()(dbConfigProvider: DatabaseConfigProvider)(im
     val waited: Try[Seq[Artikel]] = Await.ready(result, 100 seconds).value.get
     waited match {
       case Success(Seq(artikel)) => Right(artikel)
-      case Failure(exception) => Left(FoutMelding("error.notfound"))
+      case _ => Left(FoutMelding("error.notfound"))
     }
   }
 

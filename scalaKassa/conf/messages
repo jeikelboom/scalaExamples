@@ -3,3 +3,5 @@ age = Age
 
 user.created = You have successfully created a user!
 artikel.created = Artikel toegevoegd
+error.notfound = Niet bekend
+scan.ok = Artikel gevonden

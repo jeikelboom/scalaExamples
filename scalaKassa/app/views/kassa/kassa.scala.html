@@ -1,0 +1,25 @@
+@(scan: Form[ScanFormData])(implicit request: MessagesRequestHeader)
+
+@import helper._
+
+@request.flash.get("success").map { key =>
+   @request.messages(key)
+}
+<p xmlns="http://www.w3.org/1999/html">
+omschrijving: @{request.flash.get("omschrijving")}
+<br/>
+prijs:    @request.flash.get("prijs")
+    <br/>
+    totaal: @request.flash.get("totaal")
+</p>
+
+@main("Welcome to Play") {
+  @form(routes.KassaController.scanArtikel()) {
+		@inputText(scan("ean"))
+ 		@CSRF.formField
+
+		<div class="buttons">
+			<input type="submit" value="Scan"/>
+		</div>
+	}
+}
