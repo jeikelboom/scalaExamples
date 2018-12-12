@@ -64,7 +64,6 @@ class ArtikelenController  @Inject()(repo: ArtikelRepository,
   }
 
   def getArtikelbyEAN( ean: String) = Action { implicit request =>
-//    val iets: Future[Seq[Artikel]] = repo.findByEan(ean)
     repo.findByEan(ean) match  {
       case (Right(art)) => Ok(views.html.artikelen.artikel(artikelForm.fill(CreateArtikelForm(art))))
       case _ => Ok(views.html.artikelen.artikel(artikelForm))
