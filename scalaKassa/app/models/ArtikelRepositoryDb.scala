@@ -26,7 +26,7 @@ class ArtikelRepositoryDb @Inject()(dbConfigProvider: DatabaseConfigProvider)(im
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
 
     /** The ID column, which is the primary key, and auto incremented */
-    def ean = column[String]("ean", O.PrimaryKey)
+    def ean = column[String]("ean")
 
     /** The name column */
     def omschrijving = column[String]("omschrijving")
@@ -76,7 +76,7 @@ class ArtikelRepositoryDb @Inject()(dbConfigProvider: DatabaseConfigProvider)(im
     }
   }
 
-  def reset() = db.run{
+  def reset(): Future[Int] = db.run{
     artikelen.delete
   }
 

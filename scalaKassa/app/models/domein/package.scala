@@ -1,6 +1,5 @@
 package models
 
-import models.domein.{Artikel, ArtikelGroep, FoutMelding}
 import play.api.libs.json.Json
 
 package object domein {
@@ -27,11 +26,11 @@ package object domein {
   }
 
   case class Bedrag(val bedragInCenten: Int) {
-    val centen = bedragInCenten % 100
+    val centen: Int = bedragInCenten % 100
     val euros = bedragInCenten /100
 
     def +(bedrag: Bedrag) = Bedrag(bedragInCenten + bedrag.bedragInCenten)
-    def -(bedrag: Bedrag) = Bedrag(bedragInCenten = bedrag.bedragInCenten)
+    def -(bedrag: Bedrag) = Bedrag(bedragInCenten - bedrag.bedragInCenten)
     def /(door: Int) = Bedrag(bedragInCenten / door)
     def *(maal: Int) = Bedrag(bedragInCenten * maal)
     def roundedDown() = bedragInCenten - bedragInCenten % 5
@@ -54,25 +53,40 @@ package object domein {
     def verkoopPrijs() = artikel.prijs * aantal
   }
 
-  abstract trait ArtikelRepository {
+  trait ArtikelRepository {
     def findByEan(ean: String): Either[FoutMelding, Artikel]
   }
 
-  abstract trait ScansRepo {
+  trait ScansRepo {
     def storeScan (ean: String) :Either[FoutMelding, Scan]
     def regels() : List[Scan]
     def reset() : Unit
   }
 
   trait Kassa {
-    val scansRepo : ScansRepo
+    val scansRepo: ScansRepo
 
+    /**
+      * Als kassier wil ik een artikel kunnen scannen en dat het dan bewaard wordt.
+      * @param ean
+      * @return
+      */
     def scan(ean: String): Either[FoutMelding, Scan] = {
       scansRepo.storeScan(ean)
     }
+
+    /**
+      * Als kassier wil ik het totaal bedrag kunnen afrekenene
+      * @return
+      */
     def totaalBedrag(): Bedrag = {
       scansRepo.regels().foldLeft(Bedrag(0))({ (geld, scan) => geld + scan.verkoopPrijs()})
     }
+
+    /**
+      * Als kassier begin ik met een nieuwe klant
+      *
+      */
     def nieuweKlant() :Unit = {
       scansRepo.reset()
     }

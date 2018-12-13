@@ -41,7 +41,7 @@ class KassaSpec extends FlatSpec with Matchers {
     val rv= kassa.scan("???")
     rv.shouldEqual(Left(ARTIKEL_NIET_GEVONDEN))
   }
-  "Scan 12" should "totaal 1,95" in {
+  "Scan meerder artikelen" should "totaal klopt" in {
     object kassa extends Kassa with ScansMock with RepoMock
     kassa.scan(COLA.ean)
     kassa.scan(COLA.ean)
