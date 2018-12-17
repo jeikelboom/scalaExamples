@@ -70,17 +70,17 @@ class ArtikelenController  @Inject()(repo: ArtikelRepositoryDb,
   }
 
   def artikelenOverzicht = Action.async { implicit request =>
-
     repo.list().map { lijst  =>
       Ok(views.html.artikelen.artikelen(lijst.to[List]))
     }
   }
 
-  def getArtikelbyEAN( ean: String) = Action { implicit request =>
-    repo.findByEan(ean) match  {
-      case (Right(art)) => Ok(views.html.artikelen.artikel(artikelForm.fill(CreateArtikelForm(art))))
+  def getArtikelbyEAN( ean: String) = Action.async { implicit request =>
+    repo.findByEanF(ean).map((lst: Seq[Artikel]) => lst match  {
+      case (Seq(art)) => Ok(views.html.artikelen.artikel(artikelForm.fill(CreateArtikelForm(art))))
       case _ => Ok(views.html.artikelen.artikel(artikelForm))
     }
+    )
   }
 
 

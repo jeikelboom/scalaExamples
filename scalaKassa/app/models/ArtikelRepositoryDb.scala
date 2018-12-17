@@ -65,6 +65,13 @@ class ArtikelRepositoryDb @Inject()(dbConfigProvider: DatabaseConfigProvider)(im
     artikelen.result
   }
 
+  def findByEanF(ean: String): Future[Seq[Artikel]] = {
+    db.run {
+      artikelen.filter(_.ean === ean).result
+    }
+  }
+
+
   override def findByEan(ean: String): Either[FoutMelding, Artikel] = {
     val result: Future[Seq[Artikel]] = db.run {
       artikelen.filter(_.ean === ean).result
