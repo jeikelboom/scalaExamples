@@ -58,13 +58,15 @@ package object domein {
   }
 
   trait ScansRepo {
-    def storeScan (ean: String) :Either[FoutMelding, Scan]
+    def storeScan (scan : Scan) : Unit
+    def findScan(ean: String): Option[Scan]
     def regels() : List[Scan]
     def reset() : Unit
   }
 
   trait Kassa {
     val scansRepo: ScansRepo
+    val artRepo: ArtikelRepository
 
     /**
       * Als kassier wil ik een artikel kunnen scannen en dat het dan bewaard wordt.
@@ -72,7 +74,24 @@ package object domein {
       * @return
       */
     def scan(ean: String): Either[FoutMelding, Scan] = {
-      scansRepo.storeScan(ean)
+      scansRepo.findScan(ean) match {
+        case Some(Scan(art, aantal)) => {
+          val newScan = Scan(art, aantal + 1)
+          scansRepo.storeScan(newScan)
+          Right(newScan)
+        }
+        case None => {
+          //val result: Either[ErrorMessage, Artikel] =
+          artRepo.findByEan(ean) match {
+            case Left(msg) => Left(msg)
+            case Right(artikel) => {
+              val scan = Scan(artikel, 1)
+              scansRepo.storeScan(scan)
+              Right(scan)
+            }
+          }
+        }
+      }
     }
 
     /**

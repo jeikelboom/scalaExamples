@@ -56,7 +56,7 @@ object runner extends App {
   geluid(kwek)
 
   // Je kunt een trait zelfs instantieren.
-  val kwaker: Kwaker = new Kwaker {}
+  val kwaker: Kwaker = new Kwaker {override val aantal: Int = 24}
   kwaker.kwaak()
 
   val kwak: Eend = Eend("kwek")
