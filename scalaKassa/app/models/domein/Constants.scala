@@ -9,6 +9,9 @@ object Constants {
   val ARTIKELEN_LIJST = List(SPEK, WORST,HAM, COLA, SINAS)
 
   val ARTIKEL_NIET_GEVONDEN = FoutMelding("artikel.niet.gevonden")
+  val ARTIKEL_NIET_GEMAAKT = FoutMelding("artikel.niet.aangemaakt")
+  val ARTIKEL_CREATED = FoutMelding("artikel.created")
+
 
 
 }

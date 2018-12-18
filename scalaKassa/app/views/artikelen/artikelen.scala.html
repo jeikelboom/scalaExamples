@@ -2,6 +2,9 @@
 
 @import helper._
 
+    @request.flash.get("success").map { key =>
+        @request.messages(key)
+    }
 
 @main("Artikelen") {
     <h1>Bekende artikelen</h1>

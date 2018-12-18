@@ -5,7 +5,8 @@ create table "artikelen" (
   "ean" varchar  not null ,
   "omschrijving" varchar not null,
   "artgroep" varchar not null,
-  "prijs" int not null
+  "prijs" int not null,
+  CONSTRAINT eanUniek unique ("ean")
 );
 
 
