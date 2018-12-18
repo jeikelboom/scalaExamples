@@ -33,7 +33,7 @@ package object domein {
     def -(bedrag: Bedrag) = Bedrag(bedragInCenten - bedrag.bedragInCenten)
     def /(door: Int) = Bedrag(bedragInCenten / door)
     def *(maal: Int) = Bedrag(bedragInCenten * maal)
-    def roundedDown() = bedragInCenten - bedragInCenten % 5
+    def roundedDown() = Bedrag(bedragInCenten - bedragInCenten % 5)
 
     override def toString: String ={
       val euros6w = f"${euros.abs}%6d"

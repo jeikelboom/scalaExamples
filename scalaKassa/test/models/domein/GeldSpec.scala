@@ -22,4 +22,21 @@ class GeldSpec extends FlatSpec with Matchers {
     bedrag1.bedragInCenten shouldEqual bedrag2.bedragInCenten
     //bedrag1 shouldEqual(bedrag2)
    }
+
+  "1,34 + 2,65" should "equal 3,99" in {
+    (Bedrag(134) + Bedrag(2, 65)) shouldEqual(Bedrag(399))
+  }
+  "1,34 - 2,65" should "equal -1,31" in {
+    (Bedrag(134) - Bedrag(2, 65)) shouldEqual(Bedrag(-131))
+  }
+
+  "1,34 x 2" should "eq 2,68" in {
+    (Bedrag(134) * 2) shouldEqual(Bedrag(2, 68))
+  }
+  "1,34 / 3" should "eq 0,44" in {
+    (Bedrag(134) / 3) shouldEqual(Bedrag(0, 44))
+  }
+  "1,34 rounded" should "eq 1,30" in {
+    (Bedrag(134).roundedDown()) shouldEqual(Bedrag(1, 30))
+  }
 }

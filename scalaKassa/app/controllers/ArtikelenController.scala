@@ -68,9 +68,6 @@ class ArtikelenController  @Inject()(repo: ArtikelRepositoryDb,
     }
   }
 
-//    {(t: Throwable)  =>
-//    Redirect(routes.ArtikelenController.index).flashing("success" -> ARTIKEL_NIET_GEMAAKT.errorCode)
-//  }
 
   def reset = Action {request =>
     Await.ready(repo.reset(), 100 seconds)
