@@ -1,0 +1,5 @@
+docker run --rm --name pg-kassa -e POSTGRES_PASSWORD=kassa -d -p 5432:5432 -v ~/docker/volumes/pg_kassa:/var/lib/postgresql/data postgres
+docker run -it --rm --link pg-kassa:postgres postgres psql -h postgres -U postgres
+
+docker stats
+docker stop pg-kassa
