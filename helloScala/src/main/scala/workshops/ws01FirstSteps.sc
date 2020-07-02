@@ -9,7 +9,7 @@ control stuctures if and for as expressions
 // val (values) are immutable
 // The type maybe specified otherwise it is inferred by the compiler
 val wereld: String = "wereld"
-// String substitution
+// String interpolation
 val greeting = s"Hallo ${wereld}"
 
 // with def functions are defined

@@ -26,7 +26,7 @@ object WS05Zoo {
   }
 
 
-  sealed class Animal(val naam: String)
+  sealed abstract class Animal(val naam: String)
   case class Kikker(override val naam: String) extends Animal(naam) with Kwaker {
     override val aantal: Int = 24
   }
@@ -47,7 +47,7 @@ object runner extends App {
     print(dier.naam)
     dier match {
       case Hond(_) => println("Hond")
-      case eendje @ Eend(_) => eendje.kwaak()  // gebruik match als typecast
+      case eendje@Eend(_) => eendje.kwaak()  // gebruik match als typecast
       case Kikker("Kermit") => println("Its not easy being green")
       case Kikker(_) => println("A frog")
     }

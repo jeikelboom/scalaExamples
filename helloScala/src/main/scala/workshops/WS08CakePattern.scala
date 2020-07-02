@@ -2,12 +2,12 @@ package workshops
 
 object WS08CakePattern {
 
-  case class Animal(name: String, weight: Int )
+  case class Animals(name: String, weight: Int )
 
   trait AnimalRepoComponent {
     val animalRepository = new AnimalRepository()
     class AnimalRepository {
-      val animals = Map("fifi" -> Animal("fifi", 3))
+      val animals = Map("fifi" -> Animals("fifi", 3))
       def all() = animals.toList.map(x => x._2)
       def findByNam(name: String) = animals.get(name)
     }

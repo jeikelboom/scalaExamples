@@ -1,6 +1,6 @@
 package workshops
 
-import workshops.WS04ClassesObjectsTraits.{Kleur, Waarde}
+import workshops.WS04ClassesObjectsTraits.{Suit, Rank}
 
 
 object WS04ClassesObjectsTraits {
@@ -9,14 +9,8 @@ object WS04ClassesObjectsTraits {
     * Case classes zijn handige kleine datastructuren
     */
 
-  object Kleur extends Enumeration {
-    val Harten = Value
-    val Ruiten = Value
-    val Schoppen = Value
-    val Klaver = Value
-  }
-
-  object Waarde extends Enumeration {
+  object Rank extends Enumeration {
+    val Ace = Value
     val K2 = Value
     val K3 = Value
     val K4 = Value
@@ -26,28 +20,40 @@ object WS04ClassesObjectsTraits {
     val K8 = Value
     val K9 = Value
     val K10 = Value
-    val Boer = Value
-    val Vrouw = Value
-    val Heer = Value
-    val Aas = Value
+    val Jack = Value
+    val Queen = Value
+    val King = Value
   }
 
-  // case classes eenvoudige datastructuren
-  case class Speelkaart(val kleur: Kleur.Value, val waarde: Waarde.Value)
+  object Suit extends Enumeration {
+    val Hearts = Value
+    val Diamond = Value
+    val Spades = Value
+    val Clubs = Value
+  }
 
-  import WS04ClassesObjectsTraits.Kleur._
-  import WS04ClassesObjectsTraits.Waarde._
 
-  val ruitenHeer = Speelkaart(Ruiten, Heer)
-  val nogEen = ruitenHeer.copy(kleur = Schoppen)
-  val kl: Int= Kleur.Schoppen.id
+  sealed trait Cards
+  // case classes Cards is a Sum type
+  // PlayingCard is a product type
+  //
+  case class PlayingCard(val kleur: Suit.Value, val waarde: Rank.Value) extends Cards
+  case class Joker() extends Cards
+
+
+  import WS04ClassesObjectsTraits.Suit._
+  import WS04ClassesObjectsTraits.Rank._
+
+  val ruitenHeer = PlayingCard(Diamond, King)
+  val nogEen = ruitenHeer.copy(kleur = Spades)
+  val kl: Int= Suit.Spades.id
 
 
 }
 object runner22 extends App {
-  val xxxx: Kleur.Value = Kleur.apply(2)
+  val xxxx: Suit.Value = Suit.apply(2)
   println (xxxx)
-  val eenKaart = (Kleur.Schoppen, Waarde.Aas)
+  val eenKaart = (Suit.Spades, Rank.Ace)
   val mytuple: (Int, String) = (1, "hallo")
   val (x,y) = mytuple
   println(x)
