@@ -6,6 +6,9 @@ imperatief while
 control stuctures if and for as expressions
  */
 
+1 + 4
+res0 + 3
+
 // val (values) are immutable
 // The type maybe specified otherwise it is inferred by the compiler
 val wereld: String = "wereld"
@@ -19,29 +22,30 @@ def increment(i: Int) = {i.+(1)}
 var teller = 0;
 teller = increment(3)
 
-val eenLijst= List("Java", "Scala", "Kotlin", "Groovy", "Clojure")
+val someList= List("Java", "Scala", "Kotlin", "Groovy", "Clojure")
 
-val scala = eenLijst.apply(1)
+val anArray = Array("Java", "Scala", "Kotlin")
+val scala = someList(1)
 
 teller = 0
-while (teller < eenLijst.length) {
-  println(eenLijst(teller))
+while (teller < someList.length) {
+  println(someList(teller))
   teller = increment(teller)
 }
 // shorter
-eenLijst.foreach({str => println(s"  $str")})
+someList.foreach({ str => println(s"  $str")})
 
-val lengtes = eenLijst.map({str => str.length()})
+val lengtes = someList.map({ str => str.length()})
 
 // if is een expressie
 // isLang is van het type functie van string naar String
 // We gebruiken hier dus een functie literal
 val isLang: String => String = {x =>if (x.length > 5) "lang" else "kort"}
 
-val lijstLang = eenLijst.map(isLang)
+val lijstLang = someList.map(isLang)
 // for is ook een expressie
 val lengtes2 = for {
-    x <- eenLijst
+    x <- someList
   } yield isLang(x)
 
 

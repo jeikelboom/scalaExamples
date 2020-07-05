@@ -1,3 +1,5 @@
+import java.security.Policy.Parameters
+
 /*
 Doelstelling basis type leren kennen
  */
@@ -42,5 +44,9 @@ val x = "mooiweer" compare "lelijk weer"
 val lower = "HEY DAAR" toLowerCase
 val minx = x.unary_- // of -x
 
+class Meter(val m: Float) extends AnyVal {
+  override def toString: String = s"${m} meter"
+}
 
+val m4 = new Meter(4.0F)
 

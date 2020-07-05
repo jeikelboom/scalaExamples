@@ -1,14 +1,15 @@
+val talen1 = "Java" :: "Groovy" :: "Clojure" :: "Scala" :: "Python" :: Nil
+//
 val talen2 = List("Java", "Groovy","Clojure", "Scala", "Python")
-val talen = "Java" :: "Groovy" :: "Clojure" :: "Scala" :: "Python" :: Nil
 
-val groovy = talen(1)
-
-val lengtes = talen.map({_ length})
-val lengtes2 = talen.map({(x) => x.length()})
+val groovy = talen1(1)
+val lengtes = talen1.map({_ length})
+val lengtes2 = talen1.map({ (x) => x.length()})
 
 val onsFilter: String => Boolean ={(str) => str.length == 6}
 
-val zeslang= talen.filter(onsFilter)
+val zeslang= talen1.filter(onsFilter)
+
 
 def totaal(l: List[Int]): Int = {
   l match {
@@ -18,8 +19,11 @@ def totaal(l: List[Int]): Int = {
 }
 
 val totaleLengte1 = totaal(lengtes)
+
 val totaleLengte2 = lengtes.fold(0)({(x,y) => x + y})
 
+
+def f(i:Int, j:Int) = i to j
 
 def int2List(n: Int): List[Int] = (1 to n).foldLeft(List[Int]())({(l,e) => l ++ (e :: Nil) })
 
