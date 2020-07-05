@@ -1,6 +1,6 @@
 package workshops
 
-object WS10ExptFunc {
+object WS10aExprFunc {
 
   sealed trait Expr
   case class Plus(left: Expr, right: Expr) extends Expr
@@ -19,5 +19,4 @@ object WS10ExptFunc {
       case Constant(c) => s"${c}"
     }
   }
-
 }
