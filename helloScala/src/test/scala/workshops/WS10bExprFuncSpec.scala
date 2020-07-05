@@ -1,7 +1,7 @@
 package workshops
 
 import org.scalatest.{FlatSpec, Matchers}
-import workshops.WS10bExprFunc.{Constant, Plus, eval, pretty}
+import workshops.WS10bExprFunc.{Constant, Plus, eval}
 
 
 class WS10bExprFuncSpec extends FlatSpec with Matchers {
@@ -13,7 +13,7 @@ class WS10bExprFuncSpec extends FlatSpec with Matchers {
 
   "(1+2) + (3+4)"  should "be" in {
     val anExpr = Plus(Plus(Constant(1),Constant(2)),Plus(Constant(3), Constant(4)))
-    val output = pretty (anExpr)
+    val output = anExpr.pretty
     output shouldEqual("((1 + 2) + (3 + 4))")
   }
 }
