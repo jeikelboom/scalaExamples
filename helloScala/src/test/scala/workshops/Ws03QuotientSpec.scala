@@ -1,11 +1,11 @@
 package workshops
 
-import WS03Classes._
-import WS03Classes.Q.ggd
+import WS03Quotient._
+import WS03Quotient.Q.ggd
 
 import org.scalatest.{FlatSpec, Matchers}
 
-class Ws03ClassesSpec extends FlatSpec with Matchers with DslQ {
+class Ws03QuotientSpec extends FlatSpec with Matchers with DslQ {
 
   "Breuk 4/3 teller" should "have teller 4 and noemer 3" in {
     val breuk = 4 %/ 3

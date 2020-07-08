@@ -1,7 +1,7 @@
 package workshops
 
 // Een object is ook first class
-object WS03Classes {
+object WS03Quotient {
 
   class Q(val t: Int, val n: Int) {
     require(n != 0, "Cannot divide by zero")
