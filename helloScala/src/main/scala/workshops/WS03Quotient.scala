@@ -36,24 +36,20 @@ object WS03Quotient {
     *
     */
   object Q {
-    // apply is de default methode: Breuk(8,3) is Breuk.apply(8, 3)
+
     def apply(t: Int, n: Int): Q = new Q(t, n)
-    // Methode om van Int een breuk te maken
-    // deze is implicit en wordt "vanzelf" aangeroepen bij een assignment
+
+    def unapply(arg: Q): Option[(Int, Int)] = Some(arg.t, arg.n)
 
     implicit def apply(t: Int): Q = new Q(t, 1)
-
-  //  implicit def breukToDouble(b: Breuk) :Double = b.asDouble()
 
     def ggd(a: Int, b: Int): Int = {
       if (b == 0) a else ggd(b, a % b)
     }
-
-    def unapply(arg: Q): Option[(Int, Int)] = Some(arg.t, arg.n)
-
   }
 
   trait DslQ {
+
     implicit def toDsl(t: Int) = new DslQHlp1(t)
 
     class DslQHlp1(t: Int){

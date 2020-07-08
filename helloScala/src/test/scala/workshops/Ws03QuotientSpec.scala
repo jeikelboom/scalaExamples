@@ -94,7 +94,7 @@ class Ws03QuotientSpec extends FlatSpec with Matchers with DslQ {
     val b = Q(3, 4)
     val antwoord = b match  {
       case Q(t, n) => s"${t}/${n}"
-      case  _ =>  ""
+      case  _ =>  "Not recognized"
     }
     antwoord shouldEqual("3/4")
   }
