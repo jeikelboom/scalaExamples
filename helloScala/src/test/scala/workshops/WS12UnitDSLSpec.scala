@@ -1,12 +1,11 @@
 package workshops
 
 import org.scalatest.{FlatSpec, Matchers}
-import WS12UnitDSL.{CentiMeter, Meter, lengte}
+import WS12UnitDSL.{CentiMeter, Meter}
 
-class WS12UnitDSLSpec extends FlatSpec with Matchers {
+class WS12UnitDSLSpec extends FlatSpec with Matchers with MyDsl{
 
-  val v = lengte is 3.0 meter 23.0 centiMeter
-  //val v2 = Len 3.0 meters 23.0 centiMeter
+  val v =  3.0 meter 23.0 centiMeter
 
 
   "drie plus zesmeter " should "be 9 Meter" in {
