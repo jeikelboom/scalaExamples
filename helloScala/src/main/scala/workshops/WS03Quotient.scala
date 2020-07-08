@@ -18,6 +18,24 @@ object WS03Quotient {
       Q(t1, n1)
     }
 
+    def - (andere: Q): Q = {
+      val t1 = teller * andere.noemer - andere.teller * noemer
+      val n1 = noemer * andere.noemer
+      Q(t1, n1)
+    }
+
+    def * (other: Q): Q = {
+      val t1 = teller * other.teller
+      val n1 = noemer * other.noemer
+      Q(t1, n1)
+    }
+
+    def / (other: Q): Q = {
+      val t1 = teller * other.noemer
+      val n1 = noemer * other.teller
+      Q(t1, n1)
+    }
+
     override def equals(obj: Any): Boolean = {
       obj match {
         case m: Q => m.teller == this.teller && m.noemer == this.noemer

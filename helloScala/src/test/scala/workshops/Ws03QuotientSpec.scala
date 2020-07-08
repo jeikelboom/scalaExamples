@@ -91,12 +91,26 @@ class Ws03QuotientSpec extends FlatSpec with Matchers with DslQ {
   }
 
   "pattern matching" should "return (t,n)" in {
-    val b = Q(3, 4)
+    val b = 3 %/ 4
     val antwoord = b match  {
       case Q(t, n) => s"${t}/${n}"
       case  _ =>  "Not recognized"
     }
     antwoord shouldEqual("3/4")
   }
+
+  "1/3 - 1/8" should "equal 5/24" in {
+    5 %/ 24 shouldEqual(1 %/3 - 1 %/ 8)
+  }
+
+  "1/3 * 4/7" should " eq 4/21" in {
+    4%/21 shouldEqual( (1%/3) * (4 %/7))
+  }
+
+  "3/5 / 11/7" should "eq 21/55" in {
+    21%/55 shouldEqual((3%/5)/(11%/7))
+  }
+
+
 
 }
