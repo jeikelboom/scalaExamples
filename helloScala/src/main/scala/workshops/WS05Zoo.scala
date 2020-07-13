@@ -40,7 +40,7 @@ object WS05Zoo {
 
 }
 
-object runner extends App {
+object zoo extends App {
   val kwek: Animal = Eend("kwek")
 
   def geluid(dier: Animal) =  {

@@ -3,7 +3,7 @@ package workshops
 // Een object is ook first class
 object WS03Quotient {
 
-  class Q(val t: Int, val n: Int) {
+  class Q(val t: Int, val n: Int) extends Ordered[Q] {
     require(n != 0, "Cannot divide by zero")
     val g = Q.ggd(t.abs, n.abs)
     val teller = n.signum * (t / g)
@@ -47,6 +47,11 @@ object WS03Quotient {
 
  //   implicit def intToRational(i: Int) = Breuk(i)
     def asDouble () :Double = teller.asInstanceOf[Double] / noemer.asInstanceOf[Double]
+
+    override def compare(that: Q): Int = {
+      val v = teller * that.noemer - that.teller * noemer
+      if (v > 0) 1 else if (v < 0) -1 else 0
+    }
   }
 
   /**

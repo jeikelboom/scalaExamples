@@ -111,6 +111,17 @@ class Ws03QuotientSpec extends FlatSpec with Matchers with DslQ {
     21%/55 shouldEqual((3%/5)/(11%/7))
   }
 
+  "1/3" should "gr 1/4" in {
+    1 shouldEqual((1%/3) .compareTo(1%/11 ))
+    1 shouldEqual((-1 %/ 11).compare(-1%/3))
+    1 %/3 > 1%/4 shouldBe(true)
+    1%3 < 1%/4 shouldBe(false)
+    1%/3 compareTo 1%/3 shouldBe(0)
+  }
+
+  "lists" should "sort" in {
+    List(1%/11,  -14%/4, 1%/25, 13%/3, 1%/5).sorted shouldEqual(List(-14%/4, 1%/25, 1%/11, 1%/5, 13%/3))
+  }
 
 
 }
