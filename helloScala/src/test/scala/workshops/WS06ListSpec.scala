@@ -27,7 +27,7 @@ class WS06ListSpec extends FlatSpec with Matchers {
     val list2 = for (
       m <- aList
     ) yield makeString(m)
-    list2 shouldEqual Cons("m=1",Cons("m=2",Cons("m=3",Cons("m=4",TheEnd))))
+    list2 shouldBe  Cons("m=1",Cons("m=2",Cons("m=3",Cons("m=4",TheEnd))))
   }
 
   def odd(i: Int) :Boolean = i % 2 == 1
@@ -40,4 +40,15 @@ class WS06ListSpec extends FlatSpec with Matchers {
     list2 shouldEqual Cons("m=1",Cons("m=3",TheEnd))
   }
 
+  def fm(i: Int) = Cons(i, Cons(i,TheEnd))
+
+  "flatmap" should "be flat" in {
+    val flatmapped: DemoList[Int] = aList.flatMap(fm)
+    flatmapped shouldEqual Cons(1,Cons(1,Cons(2,Cons(2,Cons(3,Cons(3,Cons(4,Cons(4,TheEnd))))))))
+  }
+
+  "map" should "not be flat" in {
+    val mapped: DemoList[DemoList[Int]]   = aList.map(fm)
+    mapped shouldEqual Cons(Cons(1,Cons(1,TheEnd)),Cons(Cons(2,Cons(2,TheEnd)),Cons(Cons(3,Cons(3,TheEnd)),Cons(Cons(4,Cons(4,TheEnd)),TheEnd))))
+  }
 }
