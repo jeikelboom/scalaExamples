@@ -30,5 +30,14 @@ class WS06ListSpec extends FlatSpec with Matchers {
     list2 shouldEqual Cons("m=1",Cons("m=2",Cons("m=3",Cons("m=4",TheEnd))))
   }
 
+  def odd(i: Int) :Boolean = i % 2 == 1
+
+  "List 1,2,3,4" should "filter odd" in {
+    val list2 = for (
+      m <- aList
+      if odd(m)
+    ) yield makeString(m)
+    list2 shouldEqual Cons("m=1",Cons("m=3",TheEnd))
+  }
 
 }
