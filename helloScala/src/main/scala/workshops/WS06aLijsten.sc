@@ -1,26 +1,26 @@
-val talen1 = "Java" :: "Groovy" :: "Clojure" :: "Scala" :: "Python" :: Nil
+val languages1 = "Java" :: "Groovy" :: "Clojure" :: "Scala" :: "Python" :: Nil
 //
-val talen2 = List("Java", "Groovy","Clojure", "Scala", "Python")
+val languages2 = List("Java", "Groovy","Clojure", "Scala", "Python")
 
-val groovy = talen1(1)
-val lengtes = talen1.map({_ length})
-val lengtes2 = talen1.map({ (x) => x.length()})
+val groovy = languages1(1)
+val lengths = languages1.map({_ length})
+val lengths2 = languages1.map({ (x) => x.length()})
 
-val onsFilter: String => Boolean ={(str) => str.length == 6}
+val length6Filter: String => Boolean ={ (str) => str.length == 6}
 
-val zeslang= talen1.filter(onsFilter)
+val zeslang= languages1.filter(length6Filter)
 
 
-def totaal(l: List[Int]): Int = {
-  l match {
+def calculateSumOf(alist: List[Int]): Int = {
+  alist match {
     case Nil => 0
-    case xx :: yy => xx + totaal(yy)
+    case xx :: yy => xx + calculateSumOf(yy)
   }
 }
 
-val totaleLengte1 = totaal(lengtes)
+val totaleLengte1 = calculateSumOf(lengths)
 
-val totaleLengte2 = lengtes.fold(0)({(x,y) => x + y})
+val totaleLengte2 = lengths.fold(0)({ (x, y) => x + y})
 
 
 def f(i:Int, j:Int) = i to j
@@ -31,11 +31,11 @@ val eenint2list = int2List(4)
 
 val l4 = int2List(4)
 
-val genest = lengtes.map(int2List)
+val genest = lengths.map(int2List)
 
 val flattened = genest.flatten
 
-val nietGenest = lengtes.flatMap(int2List)
+val nietGenest = lengths.flatMap(int2List)
 
 val ontnest = for {
   x <- genest

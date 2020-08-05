@@ -1,0 +1,34 @@
+package workshops
+
+import org.scalatest.{FlatSpec, Matchers}
+import workshops.WS06bLists.{Cons, DemoList, TheEnd}
+import workshops.WS06bLists.DemoList.lengthOf
+
+
+class WS06ListSpec extends FlatSpec with Matchers {
+  val aList = Cons(1, Cons(2, Cons(3, Cons(4, TheEnd))))
+
+  "List " should " have length 0" in {
+    val l1: DemoList[Int] = TheEnd
+    lengthOf(l1) shouldEqual  0
+  }
+
+  "List 1,2,3,4" should "have lenth 4" in {
+    lengthOf(aList) shouldEqual 4
+  }
+
+  def makeString(a: Int) : String = s"m=${a}"
+
+  "List 1,2,3,4" should "map to strings" in {
+    aList.map(makeString) shouldEqual Cons("m=1",Cons("m=2",Cons("m=3",Cons("m=4",TheEnd))))
+  }
+
+  "List 1,2,3,4" should "map to strings with for" in {
+    val list2 = for (
+      m <- aList
+    ) yield makeString(m)
+    list2 shouldEqual Cons("m=1",Cons("m=2",Cons("m=3",Cons("m=4",TheEnd))))
+  }
+
+
+}
