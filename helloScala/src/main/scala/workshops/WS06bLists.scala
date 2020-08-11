@@ -7,6 +7,8 @@ object WS06bLists {
     def withFilter(p: (T) => Boolean) :DemoList[T]
     def flatMap[B](mf: (T) => DemoList[B]) :DemoList[B]
     def append[B >: T ](that: DemoList[B]): DemoList[B]
+    def foldLeft[B](begin: B)(f: (B,T) => B): B
+    def foldRight[B](end: B)(f: (T,B) => B): B
   }
 
   case object TheEnd extends DemoList[Nothing] {
@@ -17,6 +19,10 @@ object WS06bLists {
     override def flatMap[B](mf: Nothing => DemoList[B]): DemoList[B] = TheEnd
 
     override def append[B](that: DemoList[B]): DemoList[B] = that
+
+    override def foldLeft[B](begin: B)(f: (B, Nothing) => B): B = begin
+
+    override def foldRight[B](end: B)(f: (Nothing, B) => B): B = end
   }
 
   final case class Cons[T](head: T, tail: DemoList[T]) extends DemoList[T] {
@@ -36,6 +42,9 @@ object WS06bLists {
       }
     }
 
+    override def foldLeft[B](begin: B)(f: (B, T) => B): B = f(tail.foldLeft(begin)(f), head)
+    override def foldRight[B](end: B)(f: (T, B) => B): B = f(head, tail.foldRight(end)(f))
+
   }
 
   object DemoList {
@@ -43,8 +52,6 @@ object WS06bLists {
       case TheEnd => 0
       case Cons(_, rest) => 1 + lengthOf(rest)
     }
-
-    def ++[A](n: A, a: DemoList[A]) = Cons(n, a)
   }
 }
 

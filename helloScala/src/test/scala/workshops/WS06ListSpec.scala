@@ -51,4 +51,27 @@ class WS06ListSpec extends FlatSpec with Matchers {
     val mapped: DemoList[DemoList[Int]]   = aList.map(fm)
     mapped shouldEqual Cons(Cons(1,Cons(1,TheEnd)),Cons(Cons(2,Cons(2,TheEnd)),Cons(Cons(3,Cons(3,TheEnd)),Cons(Cons(4,Cons(4,TheEnd)),TheEnd))))
   }
+
+  "(((20 - 10) - 2) - 3)" should "5" in {
+    val lst: DemoList[Int] = Cons(10, Cons(2, Cons(3, TheEnd)))
+    val subtr = lst.foldLeft(20)(_ - _)
+    subtr shouldEqual(5)
+  }
+
+  "(((20 - 10) - 2) - 3)" should "print" in {
+    val lst: DemoList[Int] = Cons(10, Cons(2, Cons(3, TheEnd)))
+    val printed = lst.foldLeft("begin")((x, y) => s"(${x} op ${y})")
+    printed shouldEqual("(((begin op 3) op 2) op 10)")
+  }
+
+
+
+  "(10 - (2 - (3 - 1)))" should "10" in {
+    val lst: DemoList[Int] = Cons(10, Cons(2, Cons(3, TheEnd)))
+    val printed = lst.foldRight("end")((x, y) => s"(${x} op ${y})")
+    printed shouldEqual "(10 op (2 op (3 op end)))"
+    lst.foldRight(1)(_ - _) shouldEqual 10
+  }
+
+
 }
