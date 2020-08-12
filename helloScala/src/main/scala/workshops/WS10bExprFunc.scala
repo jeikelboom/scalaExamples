@@ -19,6 +19,7 @@ object WS10bExprFunc {
     e match {
       case Plus(l, r) => eval(l) + eval(r)
       case Constant(c) => c
+      // Yeah and what if other cases arise
     }
   }
 
