@@ -35,7 +35,6 @@ object WS06bLists {
       mf(head).append(tail.flatMap(mf))
 
     override def append[B >: T](that: DemoList[B]): DemoList[B] = {
-      println("appended" )
       this match {
         case Cons(a, TheEnd) => Cons(a,that)
         case Cons(a, t) => Cons(a,t.append(that))
