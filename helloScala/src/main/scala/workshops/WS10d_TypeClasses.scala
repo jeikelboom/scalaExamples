@@ -26,6 +26,7 @@ object WS10d_TypeClasses {
       override def evaluate(value: Expr): Int = value match {
         case a@Literal(_) => a.eval
         case p@Plus(_, _) => p.eval
+          // expr problem not solved entirely
       }
     }
 
