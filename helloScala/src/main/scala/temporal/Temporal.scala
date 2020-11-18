@@ -11,19 +11,21 @@ object Temporal {
   val BEGIN_OF_TIME = Instant.MIN
   val END_OF_TIME = Instant.MAX
 
-  case class Timeline[A] (val a: A, val since: Instant)
+  case class TimelineElement[A] (val since: Instant, val a: A ) {
+
+  }
 
 
-  implicit val timelineApplicative : Applicative[Timeline] =
-    new Applicative[Timeline] {
+  implicit val timelineApplicative : Applicative[TimelineElement] =
+    new Applicative[TimelineElement] {
 
-      override def pure[A](x: A): Timeline[A] = Timeline[A] (x, BEGIN_OF_TIME)
+      override def pure[A](x: A): TimelineElement[A] = TimelineElement[A] (BEGIN_OF_TIME, x)
 
-      override def ap[A, B](ff: Timeline[A => B])(fa: Timeline[A]): Timeline[B] =
-        Timeline[B](ff.a(fa.a), ff.since.max(fa.since))
+      override def ap[A, B](ff: TimelineElement[A => B])(fa: TimelineElement[A]): TimelineElement[B] =
+        TimelineElement[B](ff.since.max(fa.since), ff.a(fa.a))
     }
 
-  case class TimelineElement[A] (val interval: Interval, val value: A)
+//  case class TimelineElement[A] (val interval: Interval, val value: A)
 
   // describes interval begin <= x < end (semi-open)
   case class Interval(val begin: Instant, val end: Instant) {
@@ -65,5 +67,11 @@ object Temporal {
   val fmt: DateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
   val zone: ZoneId =   ZoneId.of("Europe/Amsterdam")
   def timestamp(value: String): Instant = Instant.from( ZonedDateTime.of(LocalDateTime.parse(value, fmt), zone))
-  def timestamp2String(instant: Instant) = fmt.format(ZonedDateTime.ofInstant(instant, zone))
+  def timestamp2String(instant: Instant) = {
+    instant match {
+      case Instant.MAX => "Doomsday"
+      case Instant.MIN => "Big bang"
+      case _           => fmt.format(ZonedDateTime.ofInstant(instant, zone))
+    }
+  }
 }
