@@ -5,11 +5,13 @@ import java.time.{Instant, LocalDateTime, ZoneId, ZonedDateTime}
 import java.util.Locale
 
 import cats.{Applicative, Functor}
+import workshops.WS14implicitly.Timescale
 
 object Temporal {
 
   val BEGIN_OF_TIME = Instant.MIN
   val END_OF_TIME = Instant.MAX
+
 
   case class TimelineElement[A] (val since: Instant, val a: A ) {
 
@@ -19,7 +21,7 @@ object Temporal {
   implicit val timelineApplicative : Applicative[TimelineElement] =
     new Applicative[TimelineElement] {
 
-      override def pure[A](x: A): TimelineElement[A] = TimelineElement[A] (BEGIN_OF_TIME, x)
+      override def pure[A](x: A): TimelineElement[A] = TimelineElement[A] (implicitly[Timescale[Instant]].minimum, x)
 
       override def ap[A, B](ff: TimelineElement[A => B])(fa: TimelineElement[A]): TimelineElement[B] =
         TimelineElement[B](ff.since.max(fa.since), ff.a(fa.a))
@@ -44,17 +46,31 @@ object Temporal {
 
     def join(other: Interval) : Option[Interval] =
       if (overlaps(other) || meets(other) || other.meets(this)) {
-        Option(Interval(begin min other.begin, end min other.end))
+        Option(Interval(begin min other.begin, end max other.end))
       } else {
         Option.empty
       }
 
     def intersects(other: Interval) : Option[Interval] =
       if (overlaps(other)) {
-        Option(Interval(begin max other.begin, end max other.end))
+        Option(Interval(begin max other.begin, end min other.end))
       } else {
         Option.empty
       }
+  }
+
+  abstract class Timescale[T] extends Ordering[T]{
+    val minimum: T
+    val maximum: T
+
+  }
+
+  implicit val instantTimescale: Timescale[Instant] = new Timescale[Instant] {
+    override val minimum: Instant = Instant.MIN
+    override val maximum: Instant = Instant.MAX
+
+    override def compare(x: Instant, y: Instant): Int =
+      if (x.isBefore(y)) { -1} else if (x.isAfter(y)) { 1 } else {0}
   }
 
   implicit class InstantOrdering(instant: Instant) extends Ordered[Instant] {
