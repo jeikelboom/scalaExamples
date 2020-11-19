@@ -18,7 +18,7 @@ object Temporal {
   }
 
 
-  implicit val timelineApplicative : Applicative[TimelineElement] =
+  implicit def timelineApplicative : Applicative[TimelineElement] =
     new Applicative[TimelineElement] {
 
       override def pure[A](x: A): TimelineElement[A] = TimelineElement[A] (implicitly[Timescale[Instant]].minimum, x)
