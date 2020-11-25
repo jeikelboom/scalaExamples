@@ -14,8 +14,22 @@ object Temporal {
 
   }
 
+  abstract class Timescale[T] extends Ordering[T]{
+    val minimum: T
+    val maximum: T
 
-  implicit def timelineApplicative(evidence: Timescale[Instant]) : Applicative[TimelineElement] =
+  }
+
+  implicit val instantTimescale: Timescale[Instant] = new Timescale[Instant] {
+    override val minimum: Instant = Instant.MIN
+    override val maximum: Instant = Instant.MAX
+
+    override def compare(x: Instant, y: Instant): Int =
+      if (x.isBefore(y)) { -1} else if (x.isAfter(y)) { 1 } else {0}
+  }
+
+
+  implicit def timelineApplicative(implicit evidence: Timescale[Instant]) : Applicative[TimelineElement] =
     new Applicative[TimelineElement] {
 
       override def pure[A](x: A): TimelineElement[A] = TimelineElement[A] (evidence.minimum, x)
@@ -54,20 +68,6 @@ object Temporal {
       } else {
         Option.empty
       }
-  }
-
-  abstract class Timescale[T] extends Ordering[T]{
-    val minimum: T
-    val maximum: T
-
-  }
-
-  implicit val instantTimescale: Timescale[Instant] = new Timescale[Instant] {
-    override val minimum: Instant = Instant.MIN
-    override val maximum: Instant = Instant.MAX
-
-    override def compare(x: Instant, y: Instant): Int =
-      if (x.isBefore(y)) { -1} else if (x.isAfter(y)) { 1 } else {0}
   }
 
   implicit class InstantOrdering(instant: Instant) extends Ordered[Instant] {
