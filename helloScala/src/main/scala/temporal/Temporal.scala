@@ -10,9 +10,7 @@ object Temporal {
   val END_OF_TIME: Instant = Instant.MAX
 
 
-  case class TimelineElement[A] (val since: Instant, val a: A ) {
-
-  }
+  case class TimelineElement[A] (since: Instant, a: A )
 
   abstract class Timescale[T] extends Ordering[T]{
     val minimum: T
@@ -41,7 +39,7 @@ object Temporal {
 //  case class TimelineElement[A] (val interval: Interval, val value: A)
 
   // describes interval begin <= x < end (semi-open)
-  case class Interval(val begin: Instant, val end: Instant) {
+  case class Interval(begin: Instant, end: Instant) {
 
     def overlaps(other: Interval) : Boolean =
       other.end > begin && end > other.begin
@@ -80,7 +78,7 @@ object Temporal {
   val fmt: DateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
   val zone: ZoneId =   ZoneId.of("Europe/Amsterdam")
   def timestamp(value: String): Instant = Instant.from( ZonedDateTime.of(LocalDateTime.parse(value, fmt), zone))
-  def timestamp2String(instant: Instant) = {
+  def timestamp2String(instant: Instant) : String = {
     instant match {
       case Instant.MAX => "Doomsday"
       case Instant.MIN => "Big bang"
