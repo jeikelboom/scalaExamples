@@ -18,13 +18,13 @@ object Temporal {
   }
 
 
-  implicit def timelineApplicative : Applicative[TimelineElement] =
+  implicit def timelineApplicative(evidence: Timescale[Instant]) : Applicative[TimelineElement] =
     new Applicative[TimelineElement] {
 
-      override def pure[A](x: A): TimelineElement[A] = TimelineElement[A] (implicitly[Timescale[Instant]].minimum, x)
+      override def pure[A](x: A): TimelineElement[A] = TimelineElement[A] (evidence.minimum, x)
 
       override def ap[A, B](ff: TimelineElement[A => B])(fa: TimelineElement[A]): TimelineElement[B] =
-        TimelineElement[B](ff.since.max(fa.since), ff.a(fa.a))
+        TimelineElement[B](evidence.max(ff.since, fa.since), ff.a(fa.a))
     }
 
 //  case class TimelineElement[A] (val interval: Interval, val value: A)
