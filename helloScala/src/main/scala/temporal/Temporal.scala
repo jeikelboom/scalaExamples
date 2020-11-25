@@ -1,16 +1,13 @@
 package temporal
 
-import java.time.format.{DateTimeFormatter, FormatStyle}
+import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDateTime, ZoneId, ZonedDateTime}
-import java.util.Locale
-
-import cats.{Applicative, Functor}
-import workshops.WS14implicitly.Timescale
+import cats.Applicative
 
 object Temporal {
 
-  val BEGIN_OF_TIME = Instant.MIN
-  val END_OF_TIME = Instant.MAX
+  val BEGIN_OF_TIME: Instant = Instant.MIN
+  val END_OF_TIME: Instant = Instant.MAX
 
 
   case class TimelineElement[A] (val since: Instant, val a: A ) {
