@@ -1,7 +1,7 @@
 package temporal2
 
 import java.time.format.DateTimeFormatter
-import java.time.{Instant, LocalDateTime, ZoneId, ZonedDateTime}
+import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
 
 object Temporal2 {
 
@@ -31,5 +31,11 @@ object Temporal2 {
 
   def timestamp(value: String): ZonedDateTime = ZonedDateTime.of(LocalDateTime.parse(value, DateTimeFormatter.ISO_LOCAL_DATE_TIME), ZoneId.of("UTC"))
 
+  case class Timeline[A](since: ZonedDateTime, value: A, history: List[(Interval, A)]= List()) {
+    def + (newSince: ZonedDateTime, newValue: A) : Timeline[A] = {
+      val historyRecord = (Interval(since, newSince), value)
+      Timeline(newSince, newValue, historyRecord :: history)
+    }
+  }
 
 }

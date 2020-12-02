@@ -29,4 +29,12 @@ class Temporal2Test  extends FlatSpec with Matchers {
     a join b shouldEqual Option(Interval(t1, t4))
   }
 
+  "timeline" should "build from events" in {
+    val tl1: Timeline[String] = Timeline(t1, "Almere")
+    val tl2: Timeline[String] = tl1 + (t2, "Utrecht")
+    val tl3: Timeline[String] = tl2 + (t3, "Amsterdam")
+    val tl4: Timeline[String] = tl3 + (t4, "Amersfoort")
+    println(tl4)
+  }
+
 }
