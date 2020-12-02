@@ -45,7 +45,18 @@ class Temporal2Test  extends FlatSpec with Matchers {
     def worked(city: String, profession: String) = s"worked in ${city} as ${profession}"
     val tl0: Timeline[(String, String) => String] = Applicative[Timeline].pure(worked)
     val tl3: Timeline[String] = Applicative[Timeline].ap2(tl0)(tl1, tl2)
-    println(tl3)
+    tl3 shouldEqual(Timeline(CurrentRecord(t2, "worked in Arnhem as Programmer")))
+  }
+
+  "History records" should "split in None History rest" in {
+    val record1: HistoryRecord[(String) => Int] = HistoryRecord(Interval(t1, t3), _.length)
+    val record2: HistoryRecord[String] = HistoryRecord(Interval(t2,t4), "Hello world")
+    val combined = record2.combine(record1)
+    val restOther = record2.restOther(record1)
+    val restThis = record2.restThis(record1)
+    combined shouldEqual Some(CurrentRecord(t2, 11))
+    restOther.map(_.asInstanceOf[HistoryRecord[_]].interval) shouldEqual Some(Interval(t2,t3))
+    restThis shouldEqual Some(HistoryRecord(Interval(t2,t4), "Hello world"))
   }
 
 }
