@@ -1,15 +1,16 @@
 package temporal2
 
+import cats.Applicative
 import org.scalatest.{FlatSpec, Matchers}
 import temporal2.Temporal2._
 
 
 class Temporal2Test  extends FlatSpec with Matchers {
 
-  val t1 = timestamp("2019-04-01T00:00:00")
-  val t2 = timestamp("2019-04-03T00:00:00")
-  val t3 = timestamp("2019-04-05T00:00:00")
-  val t4 = timestamp("2019-04-07T00:00:00")
+  val t1 = timestamp("2011-04-01 00:00")
+  val t2 = timestamp("2012-04-03 00:00")
+  val t3 = timestamp("2013-04-05 00:00")
+  val t4 = timestamp("2014-04-07 00:00")
   //println(timestamp2String(t1))
 
 
@@ -30,11 +31,21 @@ class Temporal2Test  extends FlatSpec with Matchers {
   }
 
   "timeline" should "build from events" in {
-    val tl1: Timeline[String] = Timeline(t1, "Almere")
-    val tl2: Timeline[String] = tl1 + (t2, "Utrecht")
-    val tl3: Timeline[String] = tl2 + (t3, "Amsterdam")
-    val tl4: Timeline[String] = tl3 + (t4, "Amersfoort")
-    println(tl4)
+
+    val tl: Timeline[String] = Timeline(CurrentRecord(t1, "Almere")) +
+      CurrentRecord(t2, "Utrecht") +
+      CurrentRecord(t3, "Utrecht") +
+      CurrentRecord(t4, "Amersfoort")
+    println(tl)
+  }
+
+  "timelines with only Current" should "ap" in {
+    val tl1: Timeline[String] = Timeline(CurrentRecord(t1, "Arnhem"))
+    val tl2: Timeline[String] = Timeline(CurrentRecord(t2, "Programmer"))
+    def worked(city: String, profession: String) = s"worked in ${city} as ${profession}"
+    val tl0: Timeline[(String, String) => String] = Applicative[Timeline].pure(worked)
+    val tl3: Timeline[String] = Applicative[Timeline].ap2(tl0)(tl1, tl2)
+    println(tl3)
   }
 
 }
