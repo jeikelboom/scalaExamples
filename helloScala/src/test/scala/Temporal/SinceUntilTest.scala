@@ -7,7 +7,7 @@ import org.scalatest.{FlatSpec, Matchers}
 import temporal.Temporal._
 import temporal.Temporal.Interval
 
-class IntervalTest extends FlatSpec with Matchers {
+class SinceUntilTest extends FlatSpec with Matchers {
   val t1 = timestamp("2019-04-01T00:00:00")
   val t2 = timestamp("2019-04-03T00:00:00")
   val t3 = timestamp("2019-04-05T00:00:00")
