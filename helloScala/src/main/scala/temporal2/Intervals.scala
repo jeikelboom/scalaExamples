@@ -31,13 +31,14 @@ object Intervals {
     def intersection(other: Interval) : Option[Interval] =
       if (overlaps(other)) Option(Interval(ordering.max(begin, other.begin), ordering.min(end, other.end))) else None
 
-    def truncateLeft(other: Interval) : Option[Interval] =
+    def truncateRight(other: Interval) : Option[Interval] =
       if (begin < other.begin && contains(other.begin)) Some(Interval(begin, other.begin)) else None
 
-    def truncateRight(other: Interval): Option[Interval] =
+    def truncateLeft(other: Interval): Option[Interval] =
       if (end > other.end && other.contains(this.begin)) Some(Interval(other.end, end)) else None
-    override def toString: String = s"[${show(begin)}, ${show(end)}]"
+    override def toString: String = s"[${showInstant(begin)}, ${showInstant(end)}]"
 
+    def show: String = s"[${begin}, ${end})"
   }
 
   implicit class ZonedDateTimeTimeDimension(zonedDateTime: Instant) extends Ordered[Instant] {
@@ -45,8 +46,8 @@ object Intervals {
       if (zonedDateTime.isBefore(that))  {-1} else if (that.isBefore(zonedDateTime)) {1} else 0
   }
 
-  def show(zonedDateTime: ZonedDateTime) = FORMAT.format(zonedDateTime)
-  def show(instant: Instant) = LocalDateTime.ofInstant(instant, ZoneId.of("UTC")).format(FORMAT)
+  //def show(zonedDateTime: ZonedDateTime) = FORMAT.format(zonedDateTime)
+  def showInstant(instant: Instant) = LocalDateTime.ofInstant(instant, ZoneId.of("UTC")).format(FORMAT)
   def read(value: String): Instant = LocalDateTime.parse(value,  FORMAT).toInstant(ZoneOffset.UTC)
 
 

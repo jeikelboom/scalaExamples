@@ -20,7 +20,7 @@ class Intervals2Test extends FlatSpec with Matchers {
   val i34 = Interval(t3, t4)
 
   "t1" should "show" in {
-    show(t1) shouldEqual "2011-04-01 16:45"
+    showInstant(t1) shouldEqual "2011-04-01 16:45"
   }
 
   "i14 and i23" should "overlap" in {
