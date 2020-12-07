@@ -1,23 +1,22 @@
 package temporal2
 
-import cats.Applicative
-import java.time.format.DateTimeFormatter
-import java.time.{Instant, ZonedDateTime}
+import java.time.Instant
 
-import Intervals._
+import cats.Applicative
+import temporal2.Intervals._
 
 
 object Temporal2 {
 
-  val ALWAYS = Interval(Instant.MIN, Instant.MAX)
+  val ALWAYS: Interval = Interval(Instant.MIN, Instant.MAX)
 
   case class TimeLineElement[A](interval: Interval, value: A) {
 
     def this(begin: Instant, end: Instant, value: A) = this(Interval(begin, end), value)
 
-    def begin = interval.begin
+    def begin: Instant = interval.begin
 
-    def end = interval.end
+    def end: Instant = interval.end
 
     def result[B](other: TimeLineElement[A => B]): Option[TimeLineElement[B]] = {
       interval.intersection(other.interval).map(TimeLineElement(_, other.value(value)))
@@ -29,7 +28,7 @@ object Temporal2 {
     def leftOverFromOther[B](other: TimeLineElement[A => B]): Option[TimeLineElement[A => B]] =
       other.interval.truncateLeft(this.interval).map(TimeLineElement(_, other.value))
 
-    def show: String = s"${interval.show} - ${value}"
+    def show: String = s"${interval.show} - $value"
 
     def append(other: TimeLineElement[A]): List[TimeLineElement[A]] = {
       assert(other.begin > this.begin)
