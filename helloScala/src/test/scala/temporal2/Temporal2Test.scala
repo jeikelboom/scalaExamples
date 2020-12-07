@@ -46,7 +46,7 @@ class Temporal2Test  extends FlatSpec with Matchers {
 
   "timeline" should "build from Intervals" in {
     val timeline: TimeLine[String] = TimeLine(List()).append(i01, "Een").append(i12,"Een")
-    val expected = TimeLine(List(TimeLineElement(Interval(t0,t2), "Een")))
+    val expected = TimeLine(List(TimeLineElement(t0,t2, "Een")))
     timeline shouldEqual expected
   }
 

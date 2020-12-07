@@ -12,6 +12,7 @@ object Temporal2 {
   val ALWAYS = Interval(Instant.MIN, Instant.MAX)
 
   case class TimeLineElement[A](interval: Interval, value: A) {
+
     def this(begin: Instant, end: Instant, value: A) = this(Interval(begin, end), value)
 
     def begin = interval.begin
@@ -41,6 +42,10 @@ object Temporal2 {
         if (end > other.begin) List(other, TimeLineElement(Interval(begin, other.begin), value))
         else List(other, this)
     }
+  }
+
+  object TimeLineElement {
+    def apply[A](begin: Instant, end: Instant, value: A): TimeLineElement[A] = new TimeLineElement(begin, end, value)
   }
 
   case class TimeLine[A](history: List[TimeLineElement[A]]) {
