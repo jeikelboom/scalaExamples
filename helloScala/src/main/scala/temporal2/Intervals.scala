@@ -47,7 +47,10 @@ object Intervals {
   }
 
   //def show(zonedDateTime: ZonedDateTime) = FORMAT.format(zonedDateTime)
-  def showInstant(instant: Instant) = LocalDateTime.ofInstant(instant, ZoneId.of("UTC")).format(FORMAT)
+  def showInstant(instant: Instant) =
+    if (instant == Instant.MAX)  "--->"
+    else if (instant == Instant.MIN) "<---"
+    else LocalDateTime.ofInstant(instant, ZoneId.of("UTC")).format(FORMAT)
   def read(value: String): Instant = LocalDateTime.parse(value,  FORMAT).toInstant(ZoneOffset.UTC)
 
 
