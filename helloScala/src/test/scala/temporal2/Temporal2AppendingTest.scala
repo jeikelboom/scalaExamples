@@ -5,7 +5,7 @@ import temporal2.Temporal2._
 import TestData._
 
 
-class Temporal2Test  extends FlatSpec with Matchers {
+class Temporal2AppendingTest  extends FlatSpec with Matchers {
 
   "timeline" should "build from open Intervals" in {
     val timeline: TimeLine[String] = TimeLine(List())

@@ -31,11 +31,14 @@ object Intervals {
     def intersection(other: Interval) : Option[Interval] =
       if (overlaps(other)) Option(Interval(ordering.max(begin, other.begin), ordering.min(end, other.end))) else None
 
-    def truncateRight(other: Interval) : Option[Interval] =
-      if (begin < other.begin && contains(other.begin)) Some(Interval(begin, other.begin)) else None
+    // leafs the right part of this minus the other
+    def minusOtherRightpart(other: Interval) : Option[Interval] =
+      if (end > other.end) Some(Interval(other.end, end)) else None
 
-    def truncateLeft(other: Interval): Option[Interval] =
-      if (end > other.end && other.contains(this.begin)) Some(Interval(other.end, end)) else None
+    // leafs the left part of this minus the other
+    def minusOtherLeftPart(other: Interval): Option[Interval] =
+      if (begin < other.begin) Some(Interval(begin, other.begin)) else None
+
     override def toString: String = s"[${showInstant(begin)}, ${showInstant(end)}]"
 
     def show: String = s"[${begin}, ${end})"

@@ -18,15 +18,15 @@ object Temporal2 {
 
     def end: Instant = interval.end
 
-    def result[B](other: TimeLineElement[A => B]): Option[TimeLineElement[B]] = {
+    def join[B](other: TimeLineElement[A => B]): Option[TimeLineElement[B]] = {
       interval.intersection(other.interval).map(TimeLineElement(_, other.value(value)))
     }
 
     def leftOverFromThis[B](other: TimeLineElement[A => B]): Option[TimeLineElement[A]] =
-      interval.truncateLeft(other.interval).map(TimeLineElement(_, value))
+      interval.minusOtherRightpart(other.interval).map(TimeLineElement(_, value))
 
     def leftOverFromOther[B](other: TimeLineElement[A => B]): Option[TimeLineElement[A => B]] =
-      other.interval.truncateLeft(this.interval).map(TimeLineElement(_, other.value))
+      other.interval.minusOtherRightpart(this.interval).map(TimeLineElement(_, other.value))
 
     def show: String = s"${interval.show} - $value"
 
