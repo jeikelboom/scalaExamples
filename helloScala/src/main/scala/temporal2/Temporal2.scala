@@ -58,9 +58,16 @@ object Temporal2 {
       TimeLine(newHistory)
     }
 
-    def show: String = {
-      history.map(elt => s"${elt.show}\n").fold("")((x, y) => x.concat(y))
+    def appendSomeElement(element: Option[TimeLineElement[A]]): TimeLine[A] = element match {
+      case Some(e) => append(e.interval, e.value)
+      case _ => this
     }
+
+    def show: String = "\n" +
+      history.map(elt => s"${elt.show}\n").fold("")((x, y) => x.concat(y)) + "\n"
+
+
+    override def toString: String = history.map(elt => s"${elt.show}\n").fold("")((x, y) => x.concat(y))
 
   }
 
@@ -72,8 +79,28 @@ object Temporal2 {
     }
 
     override def ap[A, B](ff: TimeLine[A => B])(fa: TimeLine[A]): TimeLine[B] = {
-      val value = ff.history.head.value(fa.history.head.value)
-      TimeLine(List(TimeLineElement(ALWAYS, value)))
+      val ffList: List[TimeLineElement[A => B]] = ff.history.reverse
+      val faList: List[TimeLineElement[A]] = fa.history.reverse
+      apAccumulator(ffList, faList, TimeLine(List()))
+    }
+
+
+    private def apAccumulator[A, B]( ff: List[TimeLineElement[A => B]],
+                                     fa: List[TimeLineElement[A]],
+                                     accu: TimeLine[B]): TimeLine[B] = {
+      (ff, fa) match {
+        case (hff::tailff, hfa::tailfa) => {
+          val ffleftover: List[TimeLineElement[A => B]] = consOpt(hfa.leftOverFromOther(hff), tailff)
+          val faLeftover: List[TimeLineElement[A]] = consOpt(hfa.leftOverFromThis(hff), tailfa)
+          val accuAdd: TimeLine[B] = accu.appendSomeElement(hfa.join(hff))
+          apAccumulator(ffleftover, faLeftover, accuAdd)
+        }
+        case _ => accu
+      }
+    }
+    private def consOpt[A](option: Option[A], aList: List[A]): List[A] = option match {
+      case Some(a) => a::aList
+      case _ => aList
     }
   }
 
