@@ -4,6 +4,7 @@ import java.time.Instant
 
 import cats.{Functor, Applicative}
 import temporal2.Intervals._
+import scala.annotation.tailrec
 
 
 object Temporal2 {
@@ -87,16 +88,16 @@ object Temporal2 {
     }
 
 
-    private def apAccumulator[A, B]( ff: List[TimeLineElement[A => B]],
-                                     fa: List[TimeLineElement[A]],
-                                     accu: TimeLine[B]): TimeLine[B] = {
+    @tailrec
+    private def apAccumulator[A, B](ff: List[TimeLineElement[A => B]],
+                                    fa: List[TimeLineElement[A]],
+                                    accu: TimeLine[B]): TimeLine[B] = {
       (ff, fa) match {
-        case (hff::tailff, hfa::tailfa) => {
+        case (hff::tailff, hfa::tailfa) =>
           val ffleftover: List[TimeLineElement[A => B]] = consOpt(hfa.leftOverFromOther(hff), tailff)
           val faLeftover: List[TimeLineElement[A]] = consOpt(hfa.leftOverFromThis(hff), tailfa)
           val accuAdd: TimeLine[B] = accu.appendSomeElement(hfa.join(hff))
           apAccumulator(ffleftover, faLeftover, accuAdd)
-        }
         case _ => accu
       }
     }

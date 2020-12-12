@@ -23,7 +23,7 @@ class EmployeeTest extends FlatSpec with Matchers{
   val anna: TimeLine[Employee] = TimeLine(List()).append(i19, emp1)
 
 
-  def pure[A](x: A) = Applicative[TimeLine].pure[A](x)
+  def pure[A](x: A): TimeLine[A] = Applicative[TimeLine].pure[A](x)
 
   val cityHistory: TimeLine[String] = Applicative[TimeLine].ap(pure[Address => String](_.city))(addressHistory)
   val streetHistory: TimeLine[String] =
