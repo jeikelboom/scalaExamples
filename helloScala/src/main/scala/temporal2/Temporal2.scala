@@ -2,7 +2,7 @@ package temporal2
 
 import java.time.Instant
 
-import cats.Applicative
+import cats.{Functor, Applicative}
 import temporal2.Intervals._
 
 
@@ -49,6 +49,8 @@ object Temporal2 {
 
   case class TimeLine[A](history: List[TimeLineElement[A]]) {
 
+    def this() = this(List())
+
     def append(interval: Interval, value: A): TimeLine[A] = {
       val theNewOne: TimeLineElement[A] = TimeLineElement(interval, value)
       val newHistory = history match {
@@ -64,7 +66,7 @@ object Temporal2 {
     }
 
     def show: String = "\n" +
-      history.map(elt => s"${elt.show}\n").fold("")((x, y) => x.concat(y)) + "\n"
+      history.reverse.map(elt => s"${elt.show}\n").fold("")((x, y) => x.concat(y)) + "\n"
 
 
     override def toString: String = history.map(elt => s"${elt.show}\n").fold("")((x, y) => x.concat(y))

@@ -41,7 +41,7 @@ object Intervals {
 
     override def toString: String = s"[${showInstant(begin)}, ${showInstant(end)}]"
 
-    def show: String = s"[${begin}, ${end})"
+    def show: String = s"[${showInstant(begin)}, ${showInstant(end)})"
   }
 
   implicit class ZonedDateTimeTimeDimension(zonedDateTime: Instant) extends Ordered[Instant] {
@@ -51,11 +51,10 @@ object Intervals {
 
   //def show(zonedDateTime: ZonedDateTime) = FORMAT.format(zonedDateTime)
   def showInstant(instant: Instant) =
-    if (instant == Instant.MAX)  "--->"
-    else if (instant == Instant.MIN) "<---"
+    if (instant == Instant.MAX)  "--------------->"
+    else if (instant == Instant.MIN) "<---------------"
     else LocalDateTime.ofInstant(instant, ZoneId.of("UTC")).format(FORMAT)
   def read(value: String): Instant = LocalDateTime.parse(value,  FORMAT).toInstant(ZoneOffset.UTC)
-
 
 
 

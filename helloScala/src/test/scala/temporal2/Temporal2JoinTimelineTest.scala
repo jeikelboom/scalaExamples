@@ -7,9 +7,6 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class Temporal2JoinTimelineTest extends FlatSpec with Matchers{
 
-//  val tle1: TimeLineElement[String => Int] = TimeLineElement(i09, _.length)
-//  val timeLine1: TimeLine[String => Int] = TimeLine(List(tle1))
-
   val timeline2: TimeLine[String] = TimeLine(List()).append(i02,"Hello").
     append(i23, "there").append(i35,"goodbye")
 
@@ -20,5 +17,7 @@ class Temporal2JoinTimelineTest extends FlatSpec with Matchers{
     println(timeLine3)
     timeLine3 shouldEqual expected
   }
+
+
 
 }
