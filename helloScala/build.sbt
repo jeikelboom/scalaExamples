@@ -11,7 +11,9 @@ lazy val root = (project in file("."))
     name := "helloScala",
     libraryDependencies += scalaTest % Test,
     libraryDependencies += cats,
+    libraryDependencies += cats_collections,
     libraryDependencies += json
   )
+
 
 // See https://www.scala-sbt.org/1.x/docs/Using-Sonatype.html for instructions on how to publish to Sonatype.
