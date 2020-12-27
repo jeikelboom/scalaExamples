@@ -10,11 +10,14 @@ import TestData2._
 
 class DiscreteTemporalTest extends FlatSpec with Matchers {
 
-  val range = Range(date(2020,3,15), date(2020,4,15))
-  val range1 = Range(date(2020,2,1), date(2020,2,2))
-  val range2 = Range(date(2020,2,1), date(2020,3,16))
-  val range3 = Range(date(2020,3,16), date(2020,9,2))
-  val range4 = Range(date(2020,2,1), date(2020,9,2))
+  val range :Range[LocalDate] = Range(d3, d4)
+  val range1 :Range[LocalDate] = Range(d1, d2)
+  val range2 :Range[LocalDate] = Range(d2, d3p)
+  val range3 :Range[LocalDate] = Range(d2, d3s)
+  val range4 :Range[LocalDate] = Range(d3s, d4)
+  val range5 :Range[LocalDate] = Range(d4, d5)
+  val range6 :Range[LocalDate] = Range(d1,d6)
+
 
   "range" should "contain " in {
     range.contains(date(2020, 4,10)) shouldEqual true
@@ -25,12 +28,13 @@ class DiscreteTemporalTest extends FlatSpec with Matchers {
 
   "range = range1" should "(None, Some(range)" in {
     minus(range, range1) shouldEqual (None, Some(range))
-    minus(range, range2) shouldEqual (None, Some(Range(date(2020,3,17),range.end)))
-    minus(range, range3) shouldEqual (Some(Range(date(2020,3,15), date(2020,3,15))), None)
-    minus(range, range4) shouldEqual (None, None)
+    minus(range, range2) shouldEqual (None, Some(range))
+    minus(range, range3) shouldEqual (None, Some(Range(d3.plusDays(2L), d4)))
+    minus(range, range4) shouldEqual (Some(Range(d3, d3)), None)
     minus(range, range) shouldEqual (None, None)
-    minus(range4, range) shouldEqual (Some(Range(date(2020,2,1), date(2020,3,14))),
-                                      Some(Range(date(2020,4,16), date(2020,9,2))))
+    minus(range, range6) shouldEqual (None, None)
+    minus(range, range5) shouldEqual (Some(Range(d3, d4p)), None)
+    minus(range6, range) shouldEqual (Some(Range(d1,d3p)), Some(Range(d4s,d6)))
   }
 
 
