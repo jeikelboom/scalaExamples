@@ -94,17 +94,14 @@ object Temporal2 {
                                     accu: TimeLine[B]): TimeLine[B] = {
       (ff, fa) match {
         case (hff::tailff, hfa::tailfa) =>
-          val ffleftover: List[TimeLineElement[A => B]] = consOpt(hfa.leftOverFromOther(hff), tailff)
-          val faLeftover: List[TimeLineElement[A]] = consOpt(hfa.leftOverFromThis(hff), tailfa)
+          val ffleftover: List[TimeLineElement[A => B]] = hfa.leftOverFromOther(hff).toList ::: tailff
+          val faLeftover: List[TimeLineElement[A]] = hfa.leftOverFromThis(hff).toList ::: tailfa
           val accuAdd: TimeLine[B] = accu.appendSomeElement(hfa.join(hff))
           apAccumulator(ffleftover, faLeftover, accuAdd)
         case _ => accu
       }
     }
-    private def consOpt[A](option: Option[A], aList: List[A]): List[A] = option match {
-      case Some(a) => a::aList
-      case _ => aList
-    }
+
   }
 
 

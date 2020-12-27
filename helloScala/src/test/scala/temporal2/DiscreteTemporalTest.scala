@@ -20,7 +20,7 @@ class DiscreteTemporalTest extends FlatSpec with Matchers {
 
 
   "range" should "contain " in {
-    range.contains(date(2020, 4,10)) shouldEqual true
+    range.contains(d3s) shouldEqual true
     val m1: LocalDate = date(2000, 3, 1)
     val f29= localDateEnum.pred(m1)
     f29 shouldEqual date(2000,2,29)
@@ -65,7 +65,7 @@ class DiscreteTemporalTest extends FlatSpec with Matchers {
 
   "timeline neq meeting"  should "append" in {
     val tle1 = TimelineElement(Range(d1, d2), v1)
-    val tle2 = TimelineElement(Range(d2.plusDays(1), d5), v2)
+    val tle2 = TimelineElement(Range(d2s, d5), v2)
     val tl1: DiscreteTimeline[String]  = DiscreteTimeline(List(tle1))
     val tl2 = tl1.append(tle2)
     tl2 shouldEqual DiscreteTimeline(List(tle2, tle1))
