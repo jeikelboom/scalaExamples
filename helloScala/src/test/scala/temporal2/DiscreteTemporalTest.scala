@@ -3,7 +3,6 @@ package temporal2
 import java.time.LocalDate
 
 import cats.collections.{Range, _}
-import cats.implicits._
 import org.scalatest.{FlatSpec, Matchers}
 import temporal2.DiscreteTemporal._
 import TestData2._
