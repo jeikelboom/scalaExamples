@@ -1,11 +1,9 @@
 package temporal2
 
-import cats.collections.{Range, _}
+import cats.collections.Range
 import org.scalatest.{FlatSpec, Matchers}
 import temporal2.DiscreteTemporal._
-import TestData2._
-
-import org.scalatest.{FlatSpec, Matchers}
+import temporal2.TestData2._
 
 class DiscreteTimelineTest extends FlatSpec with Matchers{
 
