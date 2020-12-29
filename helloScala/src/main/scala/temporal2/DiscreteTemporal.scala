@@ -96,4 +96,5 @@ DiscreteTemporal {
 
   def date(year: Int, month: Int, day: Int): LocalDate = LocalDate.of(year, month, day)
 
+
 }

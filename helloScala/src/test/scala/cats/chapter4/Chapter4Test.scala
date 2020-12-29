@@ -1,15 +1,13 @@
-package cats
+package cats.chapter4
 
+import cats.Applicative
 import cats.chapter4.Chapter4Examples.{CalcState, _}
 import cats.data.State
 import cats.instances.all._
 import cats.syntax.all._
 import org.scalatest.{FlatSpec, Matchers}
 
-
-
 class Chapter4Test extends FlatSpec with Matchers {
-
 
   "3 30 +" should "return 33" in {
     val expr = for {
@@ -45,6 +43,12 @@ class Chapter4Test extends FlatSpec with Matchers {
     val l2: List[Int] = List(10,20)
     val l3 = Applicative[List].ap2(l0)(l1, l2)
     l3 shouldEqual List(11, 21, 12, 22, 13, 23)
+  }
+
+  "terms " should "applicative" in {
+    val term1 = eval(IntValue(3))
+    val term2 = eval(IntValue(60))
+    val term3 = eval(plus)
   }
 
   def addThem(a:Int, b:Int): Int = a + b
@@ -107,6 +111,17 @@ class Chapter4Test extends FlatSpec with Matchers {
     result  shouldEqual("the state is 10")
     a.runS(10).value shouldEqual state
     a.runA(10).value shouldEqual result
+  }
+
+
+  "List[1,2,3]" should "follow Grahams example" in {
+    def dec(n: Int): Option[Int] = if (n >0) Some(n) else None
+    val lst = List(1, 2, 3)
+    val traversed = lst.traverse(dec)
+    traversed shouldEqual  Some(List(1, 2, 3))
+    val emptyList: List[Int] = List()
+    val emptyTraversed = emptyList.traverse(dec)
+    emptyTraversed shouldEqual Some(List())
   }
 
 }
