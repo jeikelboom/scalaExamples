@@ -1,7 +1,7 @@
 package cats.chapter4
 
-import cats.collections.Range
-import org.scalatest.{FlatSpec, Matchers}
+import cats.instances.all._
+import cats.syntax.all._
 import temporal2.DiscreteTemporal._
 import temporal2.TestData2._
 import org.scalatest.{FlatSpec, Matchers}
@@ -18,7 +18,10 @@ class TimelineTraverseTest  extends FlatSpec with Matchers {
     val tleb3 = TimelineElement(d6, d9, "to All")
     val tlb: DiscreteTimeline[String] = DiscreteTimeline(List(tleb3, tleb2, tleb1))
     val aList: List[DiscreteTimeline[String]] = List(tla, tlb)
-
+    val trv = aList.sequence
+    println(tla)
+    println(tlb)
+    println(trv)
   }
 
 }
