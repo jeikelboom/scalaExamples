@@ -17,7 +17,7 @@ object Chapter4Examples {
   type CalcState[A] = State[List[Term], A]
   def eval(term:Term): CalcState[Int] = State[List[Term], Int] { stack =>
     (term, stack) match {
-      case (IntValue(n),_) => (IntValue(4) :: stack, 0)
+      case (IntValue(n),_) => (IntValue(n) :: stack, n)
       case (Binop(s, op),IntValue(v1) :: IntValue(v2):: tail) => (IntValue(op(v1, v2))::tail, op(v1, v2))
     }
   }
