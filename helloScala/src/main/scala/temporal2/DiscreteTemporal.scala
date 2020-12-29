@@ -97,4 +97,16 @@ DiscreteTemporal {
   def date(year: Int, month: Int, day: Int): LocalDate = LocalDate.of(year, month, day)
 
 
+  def retroUpdate[A](discreteTimeline: DiscreteTimeline[A], timelineElement: TimelineElement[A]) ={
+    def retro[A](timelineElement: TimelineElement[A]): DiscreteTimeline[Option[A]] = {
+      val tle1: TimelineElement[Option[A]] = TimelineElement(LocalDate.MIN, localDateEnum.pred(timelineElement.start), None)
+      val tle2: TimelineElement[Option[A]] = TimelineElement(timelineElement.start, timelineElement.end, Some(timelineElement.value))
+      val tle3: TimelineElement[Option[A]] = TimelineElement(localDateEnum.succ(timelineElement.end), LocalDate.MAX, None)
+      DiscreteTimeline[Option[A]]().append(tle1).append(tle2).append(tle3)
+    }
+    val retrotl: DiscreteTimeline[Option[A]] = retro(timelineElement)
+    println(s"retrotl $retrotl")
+    val pr: DiscreteTimeline[(Option[A], A) => A]= timeLineApplicative.pure((x,y) => x.getOrElse(y))
+    timeLineApplicative.ap2(pr)(retrotl, discreteTimeline)
+  }
 }
