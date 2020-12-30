@@ -45,6 +45,8 @@ DiscreteTemporal {
     }
 
     override def toString: String = history.map(elt => s"$elt\n").fold("")((x, y) => x.concat(y))
+
+    def map[B](f: A => B): DiscreteTimeline[B] = timeLineApplicative.map(this)(f)
   }
 
   object DiscreteTimeline{
