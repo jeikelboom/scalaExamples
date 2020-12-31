@@ -10,7 +10,7 @@ object TemporalData {
 
   case class Interval[T](start: T, end: T)
 
-  abstract trait TimeUnit[T] extends Order[T] {
+  trait TimeUnit[T] extends Order[T] {
     val MIN: T
     val MAX: T
     def contains(interval: Interval[T], timestamp: T): Boolean
@@ -87,7 +87,7 @@ object TemporalData {
       def map[B](f: A => B): Timeline[B] = timeLineApplicative.map(this)(f)
 
       def retroUpdate(timelineElement: IntervalData[A]): Timeline[A] ={
-        def retro[A](timelineElement: IntervalData[A]): Timeline[Option[A]] = {
+        def retro(timelineElement: IntervalData[A]): Timeline[Option[A]] = {
           val (before, after) = timeUnit.minus(Interval(timeUnit.MIN, timeUnit.MAX), timelineElement.interval)
           val tle1: Option[IntervalData[Option[A]]] = before.map(i => IntervalData(i.start, i.end, None))
           val tle2: IntervalData[Option[A]] = IntervalData(timelineElement.start, timelineElement.end, Some(timelineElement.value))
