@@ -8,20 +8,32 @@ import scala.annotation.tailrec
 object TemporalData {
 
 
+  case class Interval[T](start: T, end: T)
+
   trait TimeUnit[T] extends Order[T]   with Discrete[T] {
     val MIN: T
     val MAX: T
 
-    def plus (a:Range[T], b: Range[T]): List[Range[T]] = {
-      val sum = a.+(b)(this, this)
-      sum._1 :: sum._2.toList
+    def contains(interval: Interval[T], timestamp: T): Boolean = lteqv(interval.start, timestamp) && gteqv(interval.end, timestamp)
+
+    def plus (a:Interval[T], b: Interval[T]): List[Interval[T]] = {
+      val (first, second) = if (lteqv(a.start, b.start)) (a,b) else (b, a)
+      if (gteqv(succ(first.end), second.start)) List(Interval(first.start, max(first.end, second.end)))
+      else List(first, second)
     }
 
-    def minus(a: Range[T], b: Range[T]): (Option[Range[T]], Option[Range[T]]) = {
-      val left = if (gt(b.start, a.start)) Some(Range(a.start, min(a.end, pred(b.start)))) else None
-      val right = if (lt(b.end, a.end)) Some(Range(max(a.start, succ(b.end)), a.end)) else None
+    def minus(a: Interval[T], b: Interval[T]): (Option[Interval[T]], Option[Interval[T]]) = {
+      val left = if (gt(b.start, a.start)) Some(Interval(a.start, min(a.end, pred(b.start)))) else None
+      val right = if (lt(b.end, a.end)) Some(Interval(max(a.start, succ(b.end)), a.end)) else None
       (left, right)
     }
+
+    def intersect(a: Interval[T], b: Interval[T]): Option[Interval[T]]= {
+      val start: T = max(a.start, b.start)
+      val end: T = min(a.end, b.end)
+      if (lteqv(start, end)) Some(Interval(start, end)) else None
+    }
+
 
   }
 
@@ -29,8 +41,8 @@ object TemporalData {
   class Time[T](implicit val timeUnit: TimeUnit[T]) {
 
     case class IntervalData[A](start: T, end: T, value: A)(implicit val timeUnit: TimeUnit[T]) {
-      def this(range: Range[T], value:A)(implicit timeUnit: TimeUnit[T]) = this(range.start, range.end, value)(timeUnit)
-      def range: Range[T] = Range(start, end)
+      def this(range: Interval[T], value:A)(implicit timeUnit: TimeUnit[T]) = this(range.start, range.end, value)(timeUnit)
+      def range: Interval[T] = Interval(start, end)
 
       def append(that: IntervalData[A]): List[IntervalData[A]] = {
         if (this.value == that.value) {
@@ -60,7 +72,7 @@ object TemporalData {
         }
       }
 
-      override def toString: String = history.map(elt => s"$elt\n").fold("")((x, y) => x.concat(y))
+      override def toString: String = "\n" + history.map(elt => s"$elt\n").fold("")((x, y) => x.concat(y))
 
       def map[B](f: A => B): Timeline[B] = timeLineApplicative.map(this)(f)
 
@@ -96,7 +108,7 @@ object TemporalData {
           case ((ff@IntervalData(_, _, _)) :: fftail, (fa@IntervalData(_, _, _)) :: fatail) =>
             val ffrest: List[IntervalData[A => B]] = timeUnit.minus(ff.range, fa.range)._2.toList.map(range =>IntervalData(range.start, range.end, ff.value)) ::: fftail
             val farest: List[IntervalData[A]] = timeUnit.minus(fa.range, ff.range)._2.toList.map(range =>IntervalData(range.start, range.end, fa.value)) ::: fatail
-            val accrest: Option[IntervalData[B]] = ff.range.&(fa.range).map(range =>IntervalData(range.start, range.end, ff.value(fa.value)))
+            val accrest: Option[IntervalData[B]] = timeUnit.intersect(ff.range, fa.range).map(range =>IntervalData(range.start, range.end, ff.value(fa.value)))
             val accuNext: Timeline[B] = accrest.map(e => accu.append(e)).getOrElse(accu)
             accumulator(ffrest, farest, accuNext)
           case _ => accu
