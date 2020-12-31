@@ -2,13 +2,11 @@ package temporal3
 
 import java.time.LocalDate
 
-import cats.Order
-import cats.collections.Discrete
 import temporal3.TemporalData._
 
 object LocalDateTimelines {
 
-  implicit def localDateTimeUnit: TimeUnit[LocalDate] = new TimeUnit[LocalDate] {
+  private implicit def localDateTimeUnit: DiscreteTimeUnit[LocalDate] = new DiscreteTimeUnit[LocalDate] {
     override val MIN: LocalDate = LocalDate.MIN
     override val MAX: LocalDate = LocalDate.MAX
 

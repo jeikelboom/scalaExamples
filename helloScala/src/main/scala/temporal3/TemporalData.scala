@@ -10,30 +10,39 @@ object TemporalData {
 
   case class Interval[T](start: T, end: T)
 
-  trait TimeUnit[T] extends Order[T]   with Discrete[T] {
+  abstract trait TimeUnit[T] extends Order[T] {
     val MIN: T
     val MAX: T
+    def contains(interval: Interval[T], timestamp: T): Boolean
+    def plus (a:Interval[T], b: Interval[T]): List[Interval[T]]
+    def minus(a: Interval[T], b: Interval[T]): (Option[Interval[T]], Option[Interval[T]])
+    def intersect(a: Interval[T], b: Interval[T]): Option[Interval[T]]
+    def before(first: Interval[T], second: Interval[T]): Boolean
+  }
 
-    def contains(interval: Interval[T], timestamp: T): Boolean = lteqv(interval.start, timestamp) && gteqv(interval.end, timestamp)
+  trait DiscreteTimeUnit[T] extends TimeUnit[T]  with Discrete[T] {
 
-    def plus (a:Interval[T], b: Interval[T]): List[Interval[T]] = {
+    override def contains(interval: Interval[T], timestamp: T): Boolean = lteqv(interval.start, timestamp) && gteqv(interval.end, timestamp)
+
+    override def plus (a:Interval[T], b: Interval[T]): List[Interval[T]] = {
       val (first, second) = if (lteqv(a.start, b.start)) (a,b) else (b, a)
       if (gteqv(succ(first.end), second.start)) List(Interval(first.start, max(first.end, second.end)))
       else List(first, second)
     }
 
-    def minus(a: Interval[T], b: Interval[T]): (Option[Interval[T]], Option[Interval[T]]) = {
+    override def minus(a: Interval[T], b: Interval[T]): (Option[Interval[T]], Option[Interval[T]]) = {
       val left = if (gt(b.start, a.start)) Some(Interval(a.start, min(a.end, pred(b.start)))) else None
       val right = if (lt(b.end, a.end)) Some(Interval(max(a.start, succ(b.end)), a.end)) else None
       (left, right)
     }
 
-    def intersect(a: Interval[T], b: Interval[T]): Option[Interval[T]]= {
+    override def intersect(a: Interval[T], b: Interval[T]): Option[Interval[T]] = {
       val start: T = max(a.start, b.start)
       val end: T = min(a.end, b.end)
       if (lteqv(start, end)) Some(Interval(start, end)) else None
     }
-    def before(first: Interval[T], second: Interval[T]): Boolean =
+
+    override def before(first: Interval[T], second: Interval[T]): Boolean =
       lt(succ(first.end), second.start)
 
   }
