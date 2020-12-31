@@ -41,18 +41,18 @@ object TemporalData {
   class Time[T](implicit val timeUnit: TimeUnit[T]) {
 
     case class IntervalData[A](start: T, end: T, value: A)(implicit val timeUnit: TimeUnit[T]) {
-      def this(range: Interval[T], value:A)(implicit timeUnit: TimeUnit[T]) = this(range.start, range.end, value)(timeUnit)
-      def range: Interval[T] = Interval(start, end)
+      def this(interval: Interval[T], value:A)(implicit timeUnit: TimeUnit[T]) = this(interval.start, interval.end, value)(timeUnit)
+      def interval: Interval[T] = Interval(start, end)
 
       def append(that: IntervalData[A]): List[IntervalData[A]] = {
         if (this.value == that.value) {
-          timeUnit.plus(this.range, that.range).map(range => IntervalData(range.start, range.end, value))
+          timeUnit.plus(this.interval, that.interval).map(interval => IntervalData(interval.start, interval.end, value))
         } else {
-          that :: timeUnit.minus(this.range, that.range)._1.toList.map(range => IntervalData(range.start, range.end, this.value))
+          that :: timeUnit.minus(this.interval, that.interval)._1.toList.map(interval => IntervalData(interval.start, interval.end, this.value))
         }
       }
 
-      override def toString: String = s"$range => $value"
+      override def toString: String = s"$interval => $value"
 
 
 
@@ -63,9 +63,9 @@ object TemporalData {
       def append(next: IntervalData[A]): Timeline[A] = {
         if (history.isEmpty) {
           Timeline(List(next))
-        } else if (timeUnit.gt(next.range.start, timeUnit.succ(history.head.range.end))) {
+        } else if (timeUnit.gt(next.interval.start, timeUnit.succ(history.head.interval.end))) {
           Timeline(next :: history)
-        } else if (timeUnit.lteqv(next.range.start, history.head.range.start)) {
+        } else if (timeUnit.lteqv(next.interval.start, history.head.interval.start)) {
           Timeline(history.tail).append(next)
         } else {
           Timeline(history.head.append(next) ::: history.tail)
@@ -106,9 +106,9 @@ object TemporalData {
       private def accumulator[A, B](ff: List[IntervalData[A => B]], fa: List[IntervalData[A]], accu: Timeline[B]): Timeline[B] = {
         (ff, fa) match {
           case ((ff@IntervalData(_, _, _)) :: fftail, (fa@IntervalData(_, _, _)) :: fatail) =>
-            val ffrest: List[IntervalData[A => B]] = timeUnit.minus(ff.range, fa.range)._2.toList.map(range =>IntervalData(range.start, range.end, ff.value)) ::: fftail
-            val farest: List[IntervalData[A]] = timeUnit.minus(fa.range, ff.range)._2.toList.map(range =>IntervalData(range.start, range.end, fa.value)) ::: fatail
-            val accrest: Option[IntervalData[B]] = timeUnit.intersect(ff.range, fa.range).map(range =>IntervalData(range.start, range.end, ff.value(fa.value)))
+            val ffrest: List[IntervalData[A => B]] = timeUnit.minus(ff.interval, fa.interval)._2.toList.map(interval =>IntervalData(interval.start, interval.end, ff.value)) ::: fftail
+            val farest: List[IntervalData[A]] = timeUnit.minus(fa.interval, ff.interval)._2.toList.map(interval =>IntervalData(interval.start, interval.end, fa.value)) ::: fatail
+            val accrest: Option[IntervalData[B]] = timeUnit.intersect(ff.interval, fa.interval).map(interval =>IntervalData(interval.start, interval.end, ff.value(fa.value)))
             val accuNext: Timeline[B] = accrest.map(e => accu.append(e)).getOrElse(accu)
             accumulator(ffrest, farest, accuNext)
           case _ => accu
