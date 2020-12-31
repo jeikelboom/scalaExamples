@@ -33,7 +33,8 @@ object TemporalData {
       val end: T = min(a.end, b.end)
       if (lteqv(start, end)) Some(Interval(start, end)) else None
     }
-
+    def before(first: Interval[T], second: Interval[T]): Boolean =
+      lt(succ(first.end), second.start)
 
   }
 
@@ -63,7 +64,7 @@ object TemporalData {
       def append(next: IntervalData[A]): Timeline[A] = {
         if (history.isEmpty) {
           Timeline(List(next))
-        } else if (timeUnit.gt(next.interval.start, timeUnit.succ(history.head.interval.end))) {
+        } else if (timeUnit.before(history.head.interval, next.interval)) {
           Timeline(next :: history)
         } else if (timeUnit.lteqv(next.interval.start, history.head.interval.start)) {
           Timeline(history.tail).append(next)
@@ -78,10 +79,12 @@ object TemporalData {
 
       def retroUpdate(timelineElement: IntervalData[A]): Timeline[A] ={
         def retro[A](timelineElement: IntervalData[A]): Timeline[Option[A]] = {
-          val tle1: IntervalData[Option[A]] = IntervalData(timeUnit.MIN, timeUnit.pred(timelineElement.start), None)
+          val (before, after) = timeUnit.minus(Interval(timeUnit.MIN, timeUnit.MAX), timelineElement.interval)
+          val tle1: Option[IntervalData[Option[A]]] = before.map(i => IntervalData(i.start, i.end, None))
           val tle2: IntervalData[Option[A]] = IntervalData(timelineElement.start, timelineElement.end, Some(timelineElement.value))
-          val tle3: IntervalData[Option[A]] = IntervalData(timeUnit.succ(timelineElement.end), timeUnit.MAX, None)
-          Timeline[Option[A]]().append(tle1).append(tle2).append(tle3)
+          val tle3: Option[IntervalData[Option[A]]] = after.map(i => IntervalData(i.start, i.end, None))
+          val lst: List[IntervalData[Option[A]]] = tle3.toList ++ (tle2::tle1.toList)
+          Timeline[Option[A]](lst)
         }
         val retrotl: Timeline[Option[A]] = retro(timelineElement)
         val pr: Timeline[(Option[A], A) => A]= timeLineApplicative.pure((x,y) => x.getOrElse(y))
