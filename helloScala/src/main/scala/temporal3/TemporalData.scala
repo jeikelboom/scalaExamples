@@ -7,9 +7,12 @@ import scala.annotation.tailrec
 
 object TemporalData {
 
-  trait TimeUnit[T] extends Order[T] with Discrete[T] {
+
+  trait TimeUnit[T] extends Order[T]  {
     val MIN: T
     val MAX: T
+  }
+  trait DiscreteTimeUnit[T] extends TimeUnit[T] with Discrete[T] {
 
     def plus (a:Range[T], b: Range[T]): List[Range[T]] = {
       val sum = a.+(b)(this, this)
@@ -25,7 +28,7 @@ object TemporalData {
   }
 
 
-  class Time[T](implicit val timeUnit: TimeUnit[T]) {
+  class Time[T](implicit val timeUnit: DiscreteTimeUnit[T]) {
 
     case class IntervalData[A](start: T, end: T, value: A)(implicit val timeUnit: TimeUnit[T]) {
       def this(range: Range[T], value:A)(implicit timeUnit: TimeUnit[T]) = this(range.start, range.end, value)(timeUnit)
