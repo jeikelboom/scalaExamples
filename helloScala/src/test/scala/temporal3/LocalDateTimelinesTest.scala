@@ -4,7 +4,6 @@ import org.scalatest.{FlatSpec, Matchers}
 import temporal2.TestData2.{d1, d2, d2p, d2s, d3, d3s, d4s, d5}
 import LocalDateTimelines.LocalDateTimed._
 import LocalDateTimelines.date
-import cats.collections.Range
 
 class LocalDateTimelinesTest  extends FlatSpec with Matchers {
   val tlea1 = IntervalData(d1, d2, "Hello")

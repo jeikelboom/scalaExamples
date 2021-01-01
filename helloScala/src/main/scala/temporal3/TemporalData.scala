@@ -7,14 +7,13 @@ import scala.annotation.tailrec
 
 object TemporalData {
 
-
   case class Interval[T](start: T, end: T)
 
   trait TimeUnit[T] extends Order[T] {
     val MIN: T
     val MAX: T
     def contains(interval: Interval[T], timestamp: T): Boolean
-    def plus (a:Interval[T], b: Interval[T]): List[Interval[T]]
+    def overwrite(a:Interval[T], b: Interval[T]): List[Interval[T]]
     def minus(a: Interval[T], b: Interval[T]): (Option[Interval[T]], Option[Interval[T]])
     def intersect(a: Interval[T], b: Interval[T]): Option[Interval[T]]
     def before(first: Interval[T], second: Interval[T]): Boolean
@@ -24,10 +23,10 @@ object TemporalData {
 
     override def contains(interval: Interval[T], timestamp: T): Boolean = lteqv(interval.start, timestamp) && gteqv(interval.end, timestamp)
 
-    override def plus (a:Interval[T], b: Interval[T]): List[Interval[T]] = {
-      val (first, second) = if (lteqv(a.start, b.start)) (a,b) else (b, a)
-      if (gteqv(succ(first.end), second.start)) List(Interval(first.start, max(first.end, second.end)))
-      else List(first, second)
+
+    override def overwrite(old:Interval[T], newer: Interval[T]): List[Interval[T]] = {
+      if (gteqv(succ(old.end), newer.start)) List(Interval(min(old.start, newer.start), newer.end))
+      else List(old, newer)
     }
 
     override def minus(a: Interval[T], b: Interval[T]): (Option[Interval[T]], Option[Interval[T]]) = {
@@ -44,31 +43,29 @@ object TemporalData {
 
     override def before(first: Interval[T], second: Interval[T]): Boolean =
       lt(succ(first.end), second.start)
-
   }
-
 
   class Time[T](implicit val timeUnit: TimeUnit[T]) {
 
     case class IntervalData[A](start: T, end: T, value: A)(implicit val timeUnit: TimeUnit[T]) {
       def this(interval: Interval[T], value:A)(implicit timeUnit: TimeUnit[T]) = this(interval.start, interval.end, value)(timeUnit)
+
       def interval: Interval[T] = Interval(start, end)
 
       def append(that: IntervalData[A]): List[IntervalData[A]] = {
         if (this.value == that.value) {
-          timeUnit.plus(this.interval, that.interval).map(interval => IntervalData(interval.start, interval.end, value))
+          timeUnit.overwrite(this.interval, that.interval).map(interval => IntervalData(interval.start, interval.end, value))
         } else {
           that :: timeUnit.minus(this.interval, that.interval)._1.toList.map(interval => IntervalData(interval.start, interval.end, this.value))
         }
       }
 
       override def toString: String = s"$interval => $value"
-
-
-
     }
 
     case class Timeline[A](history: List[IntervalData[A]] = List()) {
+
+      def append(start:T, end: T, value: A): Timeline[A] = append(IntervalData(start, end, value))
 
       def append(next: IntervalData[A]): Timeline[A] = {
         if (history.isEmpty) {
@@ -102,10 +99,6 @@ object TemporalData {
 
     }
 
-
-
-
-
     implicit def timeLineApplicative(implicit  timeUnit: TimeUnit[T]): Applicative[Timeline] = new Applicative[Timeline] {
 
       override def pure[A](x: A): Timeline[A] = new Timeline[A](List(IntervalData(timeUnit.MIN, timeUnit.MAX, x)))
@@ -128,9 +121,5 @@ object TemporalData {
       }
 
     }
-
-
-
   }
-
 }
