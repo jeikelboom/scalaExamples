@@ -17,6 +17,7 @@ object TemporalData {
     def minus(a: Interval[T], b: Interval[T]): (Option[Interval[T]], Option[Interval[T]])
     def intersect(a: Interval[T], b: Interval[T]): Option[Interval[T]]
     def before(first: Interval[T], second: Interval[T]): Boolean
+    def toUnits(interval: Interval[T]): List[T] = List()
   }
 
   trait DiscreteTimeUnit[T] extends TimeUnit[T]  with Discrete[T] {
@@ -49,6 +50,13 @@ object TemporalData {
 
     override def before(first: Interval[T], second: Interval[T]): Boolean =
       lt(succ(first.end), second.start)
+
+    override def toUnits(interval: Interval[T]): List[T] = interval match {
+      case Interval(_, MAX) => List()
+      case Interval(MIN, _) => List()
+      case _ => Range(interval.start, interval.end).toList(this, this)
+    }
+
   }
 
   class Time[T](implicit val timeUnit: TimeUnit[T]) {
@@ -104,8 +112,11 @@ object TemporalData {
       }
 
       def get(time: T): Option[A] = history.find(p => timeUnit.lteqv(p.start, time) && timeUnit.lteqv(time, p.end)).map(_.value)
+      def contains(time: T): Boolean = history.find(p => timeUnit.lteqv(p.start, time) && timeUnit.lteqv(time, p.end)).isDefined
 
-
+      def unpack(): List[(T, A)] = history.reverse.flatMap(elt => timeUnit.toUnits(elt.interval).map(t => (t, elt.value)))
+//      def foldLeft[B](b: B)(op: (B, (T, A)) => B) = unpack().foldLeft(b)(op)
+      def foldRight[Z](z: Z)(op: ((T, A), Z) => Z)= unpack().foldRight(z)(op)
     }
 
     implicit def timeLineApplicative(implicit  timeUnit: TimeUnit[T]): Applicative[Timeline] = new Applicative[Timeline] {
