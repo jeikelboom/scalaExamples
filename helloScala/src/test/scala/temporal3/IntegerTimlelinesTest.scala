@@ -26,6 +26,8 @@ class IntegerTimlelinesTest  extends FlatSpec with Matchers {
       .append(6,8, "BB")
       .append(10,17, "CCC")
     actual shouldEqual expected
+    actual.get(13) shouldEqual Some("CCC")
+    actual.get(3000) shouldEqual None
   }
 
   "append" should "glue and overwrite intervals" in {

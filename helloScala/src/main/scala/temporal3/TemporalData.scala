@@ -23,9 +23,15 @@ object TemporalData {
 
     override def contains(interval: Interval[T], timestamp: T): Boolean = lteqv(interval.start, timestamp) && gteqv(interval.end, timestamp)
 
-
+    /**
+      * newer overwites the old from the start of the newer
+      *
+      * @param old
+      * @param newer
+      * @return
+      */
     override def overwrite(old:Interval[T], newer: Interval[T]): List[Interval[T]] = {
-      if (gteqv(succ(old.end), newer.start)) List(Interval(min(old.start, newer.start), newer.end))
+      if (gteqv(succ(old.end), newer.start)) List(Interval(old.start, newer.end))
       else List(old, newer)
     }
 
@@ -96,6 +102,9 @@ object TemporalData {
         val pr: Timeline[(Option[A], A) => A]= timeLineApplicative.pure((x,y) => x.getOrElse(y))
         timeLineApplicative.ap2(pr)(retrotl, this)
       }
+
+      def get(time: T): Option[A] = history.find(p => timeUnit.lteqv(p.start, time) && timeUnit.lteqv(time, p.end)).map(_.value)
+
 
     }
 
