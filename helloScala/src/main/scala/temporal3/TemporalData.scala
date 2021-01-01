@@ -78,7 +78,7 @@ object TemporalData {
     }
 
     case class Timeline[A](history: List[IntervalData[A]] = List()) {
-
+      lazy val reversed : List[IntervalData[A]] = history.reverse
       def append(start:T, end: T, value: A): Timeline[A] = append(IntervalData(start, end, value))
 
       def append(next: IntervalData[A]): Timeline[A] = {
@@ -114,9 +114,9 @@ object TemporalData {
       def get(time: T): Option[A] = history.find(p => timeUnit.lteqv(p.start, time) && timeUnit.lteqv(time, p.end)).map(_.value)
       def contains(time: T): Boolean = history.find(p => timeUnit.lteqv(p.start, time) && timeUnit.lteqv(time, p.end)).isDefined
 
-      def unpack(): List[(T, A)] = history.reverse.flatMap(elt => timeUnit.toUnits(elt.interval).map(t => (t, elt.value)))
-//      def foldLeft[B](b: B)(op: (B, (T, A)) => B) = unpack().foldLeft(b)(op)
+      def unpack(): List[(T, A)] = reversed.flatMap(elt => timeUnit.toUnits(elt.interval).map(t => (t, elt.value)))
       def foldRight[Z](z: Z)(op: ((T, A), Z) => Z)= unpack().foldRight(z)(op)
+
     }
 
     implicit def timeLineApplicative(implicit  timeUnit: TimeUnit[T]): Applicative[Timeline] = new Applicative[Timeline] {
