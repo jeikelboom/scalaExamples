@@ -61,12 +61,19 @@ object TemporalData {
 
   class Time[T](implicit val timeUnit: TimeUnit[T]) {
 
+    var appendCount = 0
+    def reset() = {
+      println(s"append count: $appendCount")
+      appendCount = 0
+    }
+
     case class IntervalData[A](start: T, end: T, value: A)(implicit val timeUnit: TimeUnit[T]) {
       def this(interval: Interval[T], value:A)(implicit timeUnit: TimeUnit[T]) = this(interval.start, interval.end, value)(timeUnit)
 
       def interval: Interval[T] = Interval(start, end)
 
       def append(that: IntervalData[A]): List[IntervalData[A]] = {
+        appendCount = appendCount + 1
         if (this.value == that.value) {
           timeUnit.overwrite(this.interval, that.interval).map(interval => IntervalData(interval.start, interval.end, value))
         } else {
@@ -117,15 +124,19 @@ object TemporalData {
       def unpack(): List[(T, A)] = history.flatMap(elt => timeUnit.toUnits(elt.interval).reverse.map(t => (t, elt.value)))
       def foldRight[Z](z: Z)(op: ((T, A), Z) => Z)= unpack().foldRight(z)(op)
 
-      def map[B](f: A => B): Timeline[B] = timeLineApplicative.map(this)(f)
+      def map[B](f: A => B): Timeline[B] = {
+        //println(s"mapping $this \n" )
+        timeLineApplicative.map(this)(f)
+      }
 
-      def flatmap[B](f: A => Timeline[B]): Timeline[B] = {
+      def flatMap[B](f: A => Timeline[B]): Timeline[B] = {
+        //println(s"flatmapping $this \n" )
         def op(ta: (T,A), z:Timeline[B]): Timeline[B] = {
           val zo: Option[B] = f(ta._2).get(ta._1)
           zo match {
             case None => z
             case Some(zv) =>
-              println(s"appending ${ta._1} $zv")
+             // println(s"appending ${ta._1} $zv")
               z.append(IntervalData(ta._1, ta._1, zv))
           }
 
