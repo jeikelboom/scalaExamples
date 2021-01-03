@@ -7,6 +7,7 @@ import workshops.WS06bLists.DemoList.lengthOf
 
 class WS06ListSpec extends FlatSpec with Matchers {
   val aList = Cons(1, Cons(2, Cons(3, Cons(4, TheEnd))))
+  val bList = Cons("1", Cons("22", Cons("333", TheEnd)))
 
   "List " should " have length 0" in {
     val l1: DemoList[Int] = TheEnd
@@ -38,6 +39,18 @@ class WS06ListSpec extends FlatSpec with Matchers {
       if odd(m)
     ) yield makeString(m)
     list2 shouldEqual Cons("m=1",Cons("m=3",TheEnd))
+  }
+
+  "alist and blist" should "for combined with for or flatmap" in {
+    val forred = for (
+      v1 <- aList;
+      v2 <- bList
+    ) yield s"$v1  $v2"
+    val flatMapped = aList.flatMap(v1 => bList.map(v2 => s"$v1  $v2"))
+    val expected = Cons("1  1",Cons("1  22",Cons("1  333",Cons("2  1",Cons("2  22",Cons("2  333",Cons("3  1",Cons("3  22",Cons("3  333"
+      ,Cons("4  1",Cons("4  22",Cons("4  333",TheEnd))))))))))))
+    flatMapped shouldEqual expected
+    forred shouldEqual expected
   }
 
   def fm(i: Int) = Cons(i, Cons(i,TheEnd))
