@@ -1,7 +1,9 @@
 package temporal3
 
 import IntegerTimeUnit.IntegerTimelines._
-import IntegerTimeUnit.IntegerTimelines.timeLineApplicative
+import cats.instances.all._
+import cats.syntax.all._
+
 
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -20,6 +22,24 @@ class FoldRightTest  extends FlatSpec with Matchers {
     List(8, 7, 6, 5, 4, 3) shouldEqual dates
   }
 
+  val timeline1: Timeline[Int]= Timeline()
+    .append(10,20, 1000)
+    .append(21,30, 321)
+
+  val timeline2: Timeline[Int]= Timeline()
+    .append(10,13, 20)
+    .append(14, 18, 45)
+    .append(21,30, 321)
+
+  "sequence" should "work" in {
+    val lst = List(timeline1, timeline2)
+    val timeline3 = lst.sequence
+  }
+
+  "get" should "return" in {
+    val g = timeline2.get(16)
+    g shouldEqual Some(45)
+  }
 
 
 }
