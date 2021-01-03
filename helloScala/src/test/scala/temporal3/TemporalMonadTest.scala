@@ -25,5 +25,23 @@ class TemporalMonadTest  extends FlatSpec with Matchers {
     val timeline3 = lst.sequence
   }
 
+  "get" should "return" in {
+    val g = timeline2.get(16)
+    g shouldEqual Some(45)
+  }
+
+
+  "flatmap" should "work with for" in {
+    def pure(i: Int): Timeline[Int => Int] = timeLineApplicative.pure(j => i + j)
+    def monadFun2(i: Int):Timeline[Int] = timeLineApplicative.ap(pure(i))(timeline2)
+    println (monadFun2(300))
+    val flatmapped  = timeline1.flatmap(i => monadFun2(i))
+    println(s"fm = $flatmapped")
+//    for {
+//      a <- timeline1
+//      b <- monadFun2(a)
+//    } yield "a"
+  }
+
 
 }

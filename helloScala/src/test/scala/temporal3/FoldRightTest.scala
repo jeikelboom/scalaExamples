@@ -12,11 +12,12 @@ class FoldRightTest  extends FlatSpec with Matchers {
 
   "foldRight" should "return values" in {
     val pairs: List[(Int, String)] = tl1.foldRight(List[(Int, String)]())((ta, z) => ta :: z)
-    pairs shouldEqual List((3, "aa"), (4, "aa"), (5, "aa"), (6, "bb"), (7, "bb"), (8, "bb"))
+    pairs shouldEqual List((8,"bb"), (7,"bb"), (6,"bb"), (5,"aa"), (4,"aa"), (3,"aa"))
   }
   "foldRight" should "return dates" in {
-    val dates: List[Int] = tl1.foldRight(List[Int]())((ta, z) => ta._1 :: z)
-    List(3, 4, 5, 6, 7, 8) shouldEqual dates
+    def op(ta:(Int, String), z: List[Int]): List[Int] = ta._1 :: z
+    val dates: List[Int] = tl1.foldRight(List[Int]())(op)
+    List(8, 7, 6, 5, 4, 3) shouldEqual dates
   }
 
 

@@ -78,6 +78,7 @@ object TemporalData {
     }
 
     case class Timeline[A](history: List[IntervalData[A]] = List()) {
+
       lazy val reversed : List[IntervalData[A]] = history.reverse
       def append(start:T, end: T, value: A): Timeline[A] = append(IntervalData(start, end, value))
 
@@ -94,8 +95,6 @@ object TemporalData {
       }
 
       override def toString: String = "\n" + history.map(elt => s"$elt\n").fold("")((x, y) => x.concat(y))
-
-      def map[B](f: A => B): Timeline[B] = timeLineApplicative.map(this)(f)
 
 
       def retroUpdate(timelineElement: IntervalData[A]): Timeline[A] ={
@@ -115,8 +114,25 @@ object TemporalData {
       def get(time: T): Option[A] = history.find(p => timeUnit.lteqv(p.start, time) && timeUnit.lteqv(time, p.end)).map(_.value)
       def contains(time: T): Boolean = history.find(p => timeUnit.lteqv(p.start, time) && timeUnit.lteqv(time, p.end)).isDefined
 
-      def unpack(): List[(T, A)] = reversed.flatMap(elt => timeUnit.toUnits(elt.interval).map(t => (t, elt.value)))
+      def unpack(): List[(T, A)] = history.flatMap(elt => timeUnit.toUnits(elt.interval).reverse.map(t => (t, elt.value)))
       def foldRight[Z](z: Z)(op: ((T, A), Z) => Z)= unpack().foldRight(z)(op)
+
+      def map[B](f: A => B): Timeline[B] = timeLineApplicative.map(this)(f)
+
+      def flatmap[B](f: A => Timeline[B]): Timeline[B] = {
+        def op(ta: (T,A), z:Timeline[B]): Timeline[B] = {
+          val zo: Option[B] = f(ta._2).get(ta._1)
+          zo match {
+            case None => z
+            case Some(zv) =>
+              println(s"appending ${ta._1} $zv")
+              z.append(IntervalData(ta._1, ta._1, zv))
+          }
+
+        }
+        def z: Timeline[B] = Timeline()
+        this.foldRight(z)(op)
+      }
 
     }
 
