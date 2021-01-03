@@ -97,6 +97,7 @@ object TemporalData {
 
       def map[B](f: A => B): Timeline[B] = timeLineApplicative.map(this)(f)
 
+
       def retroUpdate(timelineElement: IntervalData[A]): Timeline[A] ={
         def retro(timelineElement: IntervalData[A]): Timeline[Option[A]] = {
           val (before, after) = timeUnit.minus(Interval(timeUnit.MIN, timeUnit.MAX), timelineElement.interval)
@@ -124,7 +125,7 @@ object TemporalData {
       override def pure[A](x: A): Timeline[A] = new Timeline[A](List(IntervalData(timeUnit.MIN, timeUnit.MAX, x)))
 
       override def ap[A, B](ff: Timeline[A => B])(fa: Timeline[A]): Timeline[B] = {
-        accumulator(ff.history.reverse, fa.history.reverse, Timeline[B](List()))
+        accumulator(ff.reversed, fa.reversed, Timeline[B](List()))
       }
 
       @tailrec
