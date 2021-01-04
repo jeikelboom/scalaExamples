@@ -13,19 +13,27 @@ class IntegerTimlelinesTest  extends FlatSpec with Matchers {
 
   "map length" should "glue intervals " in {
     val actual = tl1.map(_.length)
+    val actual2 = for (
+      va <- tl1
+    ) yield va.length
     val expected: Timeline[Int] = Timeline()
       .append(3, 8, 2)
       .append(10,17, 3)
     actual shouldEqual expected
+    actual2 shouldEqual expected
   }
 
   "map uppercase" should "glue intervals " in {
     val actual = tl1.map(_.toUpperCase)
+    val actual2 = for(
+      v1 <- tl1
+    ) yield v1.toUpperCase
     val expected: Timeline[String] = Timeline()
       .append(3,5, "AA")
       .append(6,8, "BB")
       .append(10,17, "CCC")
     actual shouldEqual expected
+    actual2 shouldEqual expected
     actual.get(13) shouldEqual Some("CCC")
     actual.get(3000) shouldEqual None
   }
