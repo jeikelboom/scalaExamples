@@ -85,7 +85,6 @@ object TemporalData {
     }
 
     case class Timeline[A](history: List[IntervalData[A]] = List()) {
-
       lazy val reversed : List[IntervalData[A]] = history.reverse
       def append(start:T, end: T, value: A): Timeline[A] = append(IntervalData(start, end, value))
 
@@ -99,6 +98,11 @@ object TemporalData {
         } else {
           Timeline(history.head.append(next) ::: history.tail)
         }
+      }
+
+      def appendTimeline(other: Timeline[A]): Timeline[A] = other.history.reverse match {
+        case Nil => this
+        case head::tail => append(head).appendTimeline(Timeline(tail.reverse))
       }
 
       override def toString: String = "\n" + history.map(elt => s"$elt\n").fold("")((x, y) => x.concat(y))
@@ -121,30 +125,45 @@ object TemporalData {
       def get(time: T): Option[A] = history.find(p => timeUnit.lteqv(p.start, time) && timeUnit.lteqv(time, p.end)).map(_.value)
       def contains(time: T): Boolean = history.find(p => timeUnit.lteqv(p.start, time) && timeUnit.lteqv(time, p.end)).isDefined
 
+      def subTimeline(start: T, end: T): Timeline[A] = Timeline(history
+          .filter(e => timeUnit.lteqv(e.start, end) && timeUnit.gteqv(e.end, start))
+          .map(e => IntervalData(timeUnit.max(start, e.start), timeUnit.min(end,e.end), e.value )))
+
       def unpack(): List[(T, A)] = history.flatMap(elt => timeUnit.toUnits(elt.interval).reverse.map(t => (t, elt.value)))
+
       def foldRight[Z](z: Z)(op: ((T, A), Z) => Z)= unpack().foldRight(z)(op)
 
+      def foldRighter[Z](z: Z)(op: (IntervalData[A], Z) => Z)= history.foldRight(z)(op)
+      def foldLefter[Z](z: Z)(op: (Z, IntervalData[A]) => Z)= reversed.foldLeft(z)(op)
+
+
       def map[B](f: A => B): Timeline[B] = {
-        //println(s"mapping $this \n" )
         timeLineApplicative.map(this)(f)
       }
 
       def flatMap[B](f: A => Timeline[B]): Timeline[B] = {
-        //println(s"flatmapping $this \n" )
+        def accumulator(in: IntervalData[A]): Timeline[B] = {
+          f(in.value).subTimeline(in.start, in.end)
+        }
+
+        this.foldLefter(Timeline[B]())((accu, in) => {
+          accu.appendTimeline(accumulator(in))
+        })
+      }
+
+
+      def flatMap1[B](f: A => Timeline[B]): Timeline[B] = {
         def op(ta: (T,A), z:Timeline[B]): Timeline[B] = {
           val zo: Option[B] = f(ta._2).get(ta._1)
           zo match {
             case None => z
             case Some(zv) =>
-             // println(s"appending ${ta._1} $zv")
               z.append(IntervalData(ta._1, ta._1, zv))
           }
-
         }
         def z: Timeline[B] = Timeline()
         this.foldRight(z)(op)
       }
-
     }
 
     implicit def timeLineApplicative(implicit  timeUnit: TimeUnit[T]): Applicative[Timeline] = new Applicative[Timeline] {

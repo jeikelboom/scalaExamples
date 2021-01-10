@@ -65,7 +65,7 @@ class TemporalMonadTest  extends FlatSpec with Matchers {
       f3 <- timeline3
     ) yield f1 + f2 + f3
     result1 shouldEqual( result2)
-    expected shouldEqual  result1
+    result1 shouldEqual  expected
     reset()
   }
 
