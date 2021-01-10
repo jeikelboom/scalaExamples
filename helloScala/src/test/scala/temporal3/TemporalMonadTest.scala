@@ -48,16 +48,12 @@ class TemporalMonadTest  extends FlatSpec with Matchers {
     .append(40,49,4550)
 
   "map" should "equal" in {
-    reset()
     val pured: Timeline[(Int, Int, Int) => Int] = timeLineApplicative.pure((i,j,k) => i + j + k)
     val actual: Timeline[Int] = timeLineApplicative.ap3(pured)(timeline1, timeline2, timeline3)
     actual shouldEqual  expected
-    println("mapped")
-    reset()
   }
 
   "flatMap" should "equal for" in {
-    reset()
     val result1 = timeline1.flatMap(x1 => timeline2.flatMap(x2 => timeline3.map(x3 =>x3 + x2 + x1)))
     val result2 = for (
       f1 <- timeline1;
@@ -66,7 +62,6 @@ class TemporalMonadTest  extends FlatSpec with Matchers {
     ) yield f1 + f2 + f3
     result1 shouldEqual( result2)
     result1 shouldEqual  expected
-    reset()
   }
 
 

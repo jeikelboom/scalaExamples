@@ -31,13 +31,8 @@ class TemporalMonadSimpleTest  extends FlatSpec with Matchers {
 
 
   "flatMap" should "equal for" in {
-    println (s"tl1 = $timeline1")
-    println (s"tl2 = $timeline2")
-    println (s"tl3 = $timeline3")
-    reset()
     val result1 = timeline1.flatMap(x1 => timeline2.flatMap(x2 => timeline3.map(x3 => x3 + x2 + x1)))
     result1 shouldEqual  expected
-    reset()
   }
 
 

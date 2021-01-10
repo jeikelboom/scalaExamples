@@ -27,9 +27,9 @@ object TemporalData {
     /**
       * newer overwites the old from the start of the newer
       *
-      * @param old
-      * @param newer
-      * @return
+      * @param old an existing record
+      * @param newer a new record overwriting old
+      * @return list with 1 any leftover from old and 2 newer
       */
     override def overwrite(old:Interval[T], newer: Interval[T]): List[Interval[T]] = {
       if (gteqv(succ(old.end), newer.start)) List(Interval(old.start, newer.end))
@@ -61,19 +61,12 @@ object TemporalData {
 
   class Time[T](implicit val timeUnit: TimeUnit[T]) {
 
-    var appendCount = 0
-    def reset() = {
-      println(s"append count: $appendCount")
-      appendCount = 0
-    }
-
     case class IntervalData[A](start: T, end: T, value: A)(implicit val timeUnit: TimeUnit[T]) {
       def this(interval: Interval[T], value:A)(implicit timeUnit: TimeUnit[T]) = this(interval.start, interval.end, value)(timeUnit)
 
       def interval: Interval[T] = Interval(start, end)
 
       def append(that: IntervalData[A]): List[IntervalData[A]] = {
-        appendCount = appendCount + 1
         if (this.value == that.value) {
           timeUnit.overwrite(this.interval, that.interval).map(interval => IntervalData(interval.start, interval.end, value))
         } else {
@@ -102,7 +95,12 @@ object TemporalData {
 
       def appendTimeline(other: Timeline[A]): Timeline[A] = other.history.reverse match {
         case Nil => this
-        case head::tail => append(head).appendTimeline(Timeline(tail.reverse))
+        case head::tail => append(head).appendListReversed(tail)
+      }
+
+      def appendListReversed(list: List[IntervalData[A]]): Timeline[A] = list match {
+        case Nil => this
+        case head::tail => append(head).appendListReversed(tail)
       }
 
       override def toString: String = "\n" + history.map(elt => s"$elt\n").fold("")((x, y) => x.concat(y))
@@ -131,10 +129,10 @@ object TemporalData {
 
       def unpack(): List[(T, A)] = history.flatMap(elt => timeUnit.toUnits(elt.interval).reverse.map(t => (t, elt.value)))
 
-      def foldRight[Z](z: Z)(op: ((T, A), Z) => Z)= unpack().foldRight(z)(op)
+      def foldRight[Z](z: Z)(op: ((T, A), Z) => Z): Z= unpack().foldRight(z)(op)
 
-      def foldRighter[Z](z: Z)(op: (IntervalData[A], Z) => Z)= history.foldRight(z)(op)
-      def foldLefter[Z](z: Z)(op: (Z, IntervalData[A]) => Z)= reversed.foldLeft(z)(op)
+      def foldRighter[Z](z: Z)(op: (IntervalData[A], Z) => Z): Z= history.foldRight(z)(op)
+      def foldLefter[Z](z: Z)(op: (Z, IntervalData[A]) => Z): Z= reversed.foldLeft(z)(op)
 
 
       def map[B](f: A => B): Timeline[B] = {
@@ -149,20 +147,6 @@ object TemporalData {
         this.foldLefter(Timeline[B]())((accu, in) => {
           accu.appendTimeline(accumulator(in))
         })
-      }
-
-
-      def flatMap1[B](f: A => Timeline[B]): Timeline[B] = {
-        def op(ta: (T,A), z:Timeline[B]): Timeline[B] = {
-          val zo: Option[B] = f(ta._2).get(ta._1)
-          zo match {
-            case None => z
-            case Some(zv) =>
-              z.append(IntervalData(ta._1, ta._1, zv))
-          }
-        }
-        def z: Timeline[B] = Timeline()
-        this.foldRight(z)(op)
       }
     }
 
