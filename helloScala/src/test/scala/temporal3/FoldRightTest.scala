@@ -23,17 +23,33 @@ class FoldRightTest  extends FlatSpec with Matchers {
   }
 
   val timeline1: Timeline[Int]= Timeline()
+    .append(Int.MinValue,9,0)
     .append(10,20, 1000)
     .append(21,30, 321)
+    .append(31, Int.MaxValue, 0)
 
   val timeline2: Timeline[Int]= Timeline()
+    .append(Int.MinValue,9,0)
     .append(10,13, 20)
     .append(14, 18, 45)
+    .append(19,20, 0)
     .append(21,30, 321)
+    .append(31, Int.MaxValue, 0)
 
-  "sequence" should "work" in {
+
+  val timeline3: Timeline[List[Int]] = Timeline()
+    .append(Int.MinValue,9, List(0, 0))
+    .append(10,13, List(1000, 20))
+    .append(14, 18, List(1000, 45))
+    .append(19,20, List(1000, 0))
+    .append(21, 30, List(321, 321))
+    .append(31, Int.MaxValue, List(0, 0))
+
+  "sequence list of timelines" should "transform to timeline of lists" in {
     val lst = List(timeline1, timeline2)
-    val timeline3 = lst.sequence
+    val combined = lst.sequence
+    combined shouldEqual  timeline3
+    println(timeline3)
   }
 
   "get" should "return" in {

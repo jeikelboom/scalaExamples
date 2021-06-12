@@ -7,6 +7,7 @@ object Chapter4Examples {
   sealed trait Term
   final case class IntValue(value: Int) extends Term
   final case class Binop(symbol:String, eval: (Int, Int) => Int) extends Term
+  final case class Error()
   val plus: Term = Binop("+", _ + _)
   val times: Term = Binop("*", _ * _)
 
